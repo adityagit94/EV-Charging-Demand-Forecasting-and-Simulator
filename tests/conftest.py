@@ -2,20 +2,19 @@
 
 import os
 import tempfile
-from pathlib import Path
 from typing import Generator
 
 import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
 
-# Set test environment
-os.environ["ENV"] = "test"
-os.environ["DEBUG"] = "true"
-
 from src.api.app import app
 from src.data_pipeline import DataPipeline
 from src.features import FeatureEngineer
+
+# Set test environment
+os.environ["ENV"] = "test"
+os.environ["DEBUG"] = "true"
 
 
 @pytest.fixture(scope="session")

@@ -1,10 +1,8 @@
 """Unit tests for FastAPI application."""
 
-import json
 from unittest.mock import Mock, patch
 
 import pytest
-from fastapi.testclient import TestClient
 
 
 class TestAPIEndpoints:
