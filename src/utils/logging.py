@@ -17,7 +17,7 @@ def setup_logging(
     format_string: Optional[str] = None,
 ) -> None:
     """Setup logging configuration with loguru.
-    
+
     Args:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         log_file: Path to log file. If None, only console logging is used.
@@ -27,7 +27,7 @@ def setup_logging(
     """
     # Remove default handler
     logger.remove()
-    
+
     # Default format
     if format_string is None:
         format_string = (
@@ -36,7 +36,7 @@ def setup_logging(
             "<cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> | "
             "<level>{message}</level>"
         )
-    
+
     # Console handler
     logger.add(
         sys.stderr,
@@ -46,12 +46,12 @@ def setup_logging(
         backtrace=True,
         diagnose=True,
     )
-    
+
     # File handler
     if log_file:
         log_path = Path(log_file)
         log_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         logger.add(
             log_file,
             format=format_string,
@@ -62,16 +62,16 @@ def setup_logging(
             backtrace=True,
             diagnose=True,
         )
-    
+
     logger.info(f"Logging configured with level: {log_level}")
 
 
 def get_logger(name: str) -> "logger":
     """Get a logger instance for a specific module.
-    
+
     Args:
         name: Logger name (typically __name__)
-        
+
     Returns:
         Logger instance
     """

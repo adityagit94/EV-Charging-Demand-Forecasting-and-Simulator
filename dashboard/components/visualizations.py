@@ -9,105 +9,87 @@ from typing import List, Optional
 
 
 def create_time_series_plot(
-    data: pd.DataFrame, 
-    x_col: str, 
-    y_col: str, 
+    data: pd.DataFrame,
+    x_col: str,
+    y_col: str,
     color_col: Optional[str] = None,
-    title: str = "Time Series Plot"
+    title: str = "Time Series Plot",
 ) -> go.Figure:
     """Create an interactive time series plot."""
     fig = px.line(data, x=x_col, y=y_col, color=color_col, title=title)
     fig.update_layout(
-        height=400,
-        hovermode='x unified',
-        showlegend=True if color_col else False
+        height=400, hovermode="x unified", showlegend=True if color_col else False
     )
     return fig
 
 
-def create_correlation_heatmap(data: pd.DataFrame, title: str = "Correlation Matrix") -> go.Figure:
+def create_correlation_heatmap(
+    data: pd.DataFrame, title: str = "Correlation Matrix"
+) -> go.Figure:
     """Create a correlation heatmap."""
     correlation_matrix = data.corr()
-    
+
     fig = px.imshow(
-        correlation_matrix,
-        title=title,
-        color_continuous_scale='RdBu_r',
-        aspect='auto'
+        correlation_matrix, title=title, color_continuous_scale="RdBu_r", aspect="auto"
     )
-    
+
     fig.update_layout(height=600)
     return fig
 
 
 def create_feature_importance_plot(
-    features: List[str], 
-    importance: List[float],
-    title: str = "Feature Importance"
+    features: List[str], importance: List[float], title: str = "Feature Importance"
 ) -> go.Figure:
     """Create a horizontal bar chart for feature importance."""
-    df = pd.DataFrame({
-        'feature': features,
-        'importance': importance
-    }).sort_values('importance', ascending=True)
-    
-    fig = px.bar(df, x='importance', y='feature', orientation='h', title=title)
+    df = pd.DataFrame({"feature": features, "importance": importance}).sort_values(
+        "importance", ascending=True
+    )
+
+    fig = px.bar(df, x="importance", y="feature", orientation="h", title=title)
     fig.update_layout(height=400)
     return fig
 
 
 def create_demand_heatmap(
-    data: pd.DataFrame,
-    title: str = "Demand Heatmap"
+    data: pd.DataFrame, title: str = "Demand Heatmap"
 ) -> go.Figure:
     """Create a heatmap showing demand patterns by hour and day."""
     # Pivot data for heatmap
     heatmap_data = data.pivot_table(
-        values='sessions', 
-        index='hour_of_day', 
-        columns='day_of_week', 
-        aggfunc='mean'
+        values="sessions", index="hour_of_day", columns="day_of_week", aggfunc="mean"
     )
-    
+
     # Day names for columns
-    day_names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
     heatmap_data.columns = [day_names[i] for i in heatmap_data.columns]
-    
+
     fig = px.imshow(
         heatmap_data,
         title=title,
-        labels={'x': 'Day of Week', 'y': 'Hour of Day', 'color': 'Avg Sessions'},
-        color_continuous_scale='Blues'
+        labels={"x": "Day of Week", "y": "Hour of Day", "color": "Avg Sessions"},
+        color_continuous_scale="Blues",
     )
-    
+
     fig.update_layout(height=500)
     return fig
 
 
 def create_distribution_plot(
-    data: pd.DataFrame,
-    column: str,
-    title: str = "Distribution Plot"
+    data: pd.DataFrame, column: str, title: str = "Distribution Plot"
 ) -> go.Figure:
     """Create a distribution plot with histogram and box plot."""
     fig = make_subplots(
-        rows=2, cols=1,
-        subplot_titles=('Histogram', 'Box Plot'),
-        vertical_spacing=0.1
+        rows=2, cols=1, subplot_titles=("Histogram", "Box Plot"), vertical_spacing=0.1
     )
-    
+
     # Histogram
     fig.add_trace(
-        go.Histogram(x=data[column], name='Histogram', nbinsx=30),
-        row=1, col=1
+        go.Histogram(x=data[column], name="Histogram", nbinsx=30), row=1, col=1
     )
-    
+
     # Box plot
-    fig.add_trace(
-        go.Box(y=data[column], name='Box Plot'),
-        row=2, col=1
-    )
-    
+    fig.add_trace(go.Box(y=data[column], name="Box Plot"), row=2, col=1)
+
     fig.update_layout(height=600, title_text=title, showlegend=False)
     return fig
 
@@ -115,7 +97,7 @@ def create_distribution_plot(
 def display_metrics_cards(metrics: dict):
     """Display metrics in a card layout."""
     cols = st.columns(len(metrics))
-    
+
     for i, (label, value) in enumerate(metrics.items()):
         with cols[i]:
             if isinstance(value, float):
@@ -128,36 +110,40 @@ def create_prediction_comparison_plot(
     actual: List[float],
     predicted: List[float],
     timestamps: Optional[List] = None,
-    title: str = "Actual vs Predicted"
+    title: str = "Actual vs Predicted",
 ) -> go.Figure:
     """Create a comparison plot of actual vs predicted values."""
     if timestamps is None:
         timestamps = list(range(len(actual)))
-    
+
     fig = go.Figure()
-    
-    fig.add_trace(go.Scatter(
-        x=timestamps,
-        y=actual,
-        mode='lines+markers',
-        name='Actual',
-        line=dict(color='blue')
-    ))
-    
-    fig.add_trace(go.Scatter(
-        x=timestamps,
-        y=predicted,
-        mode='lines+markers',
-        name='Predicted',
-        line=dict(color='red', dash='dash')
-    ))
-    
+
+    fig.add_trace(
+        go.Scatter(
+            x=timestamps,
+            y=actual,
+            mode="lines+markers",
+            name="Actual",
+            line=dict(color="blue"),
+        )
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=timestamps,
+            y=predicted,
+            mode="lines+markers",
+            name="Predicted",
+            line=dict(color="red", dash="dash"),
+        )
+    )
+
     fig.update_layout(
         title=title,
-        xaxis_title='Time',
-        yaxis_title='Sessions',
+        xaxis_title="Time",
+        yaxis_title="Sessions",
         height=400,
-        hovermode='x unified'
+        hovermode="x unified",
     )
-    
+
     return fig

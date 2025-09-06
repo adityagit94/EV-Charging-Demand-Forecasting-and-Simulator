@@ -11,7 +11,7 @@ from pydantic_settings import BaseSettings
 
 class ModelConfig(BaseModel):
     """Model configuration settings."""
-    
+
     name: str = "xgboost"
     max_depth: int = 6
     learning_rate: float = 0.1
@@ -23,7 +23,7 @@ class ModelConfig(BaseModel):
 
 class DataConfig(BaseModel):
     """Data processing configuration."""
-    
+
     raw_data_path: str = "data/raw/synthetic_sessions.csv"
     processed_data_path: str = "data/processed/"
     test_size: float = 0.2
@@ -35,7 +35,7 @@ class DataConfig(BaseModel):
 
 class FeatureConfig(BaseModel):
     """Feature engineering configuration."""
-    
+
     lag_hours: List[int] = Field(default=[1, 24, 168])
     rolling_windows: List[int] = Field(default=[24, 72, 168])
     temporal_features: bool = True
@@ -45,7 +45,7 @@ class FeatureConfig(BaseModel):
 
 class APIConfig(BaseModel):
     """API server configuration."""
-    
+
     host: str = "0.0.0.0"
     port: int = 8000
     debug: bool = False
@@ -56,7 +56,7 @@ class APIConfig(BaseModel):
 
 class DashboardConfig(BaseModel):
     """Dashboard configuration."""
-    
+
     port: int = 8501
     title: str = "EV Charging Demand Forecast"
     theme: str = "light"
@@ -65,9 +65,11 @@ class DashboardConfig(BaseModel):
 
 class LoggingConfig(BaseModel):
     """Logging configuration."""
-    
+
     level: str = "INFO"
-    format: str = "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+    format: str = (
+        "{time:YYYY-MM-DD HH:mm:ss} | {level} | {name}:{function}:{line} | {message}"
+    )
     rotation: str = "10 MB"
     retention: str = "1 month"
     log_file: str = "logs/app.log"
@@ -75,17 +77,19 @@ class LoggingConfig(BaseModel):
 
 class Settings(BaseSettings):
     """Application settings."""
-    
+
     # Environment
     environment: str = Field(default="development", alias="ENV")
     debug: bool = Field(default=True, alias="DEBUG")
-    
+
     # Project paths
-    project_root: Path = Field(default_factory=lambda: Path(__file__).parent.parent.parent)
+    project_root: Path = Field(
+        default_factory=lambda: Path(__file__).parent.parent.parent
+    )
     data_dir: Path = Field(default_factory=lambda: Path("data"))
     models_dir: Path = Field(default_factory=lambda: Path("models"))
     logs_dir: Path = Field(default_factory=lambda: Path("logs"))
-    
+
     # Component configurations
     model: ModelConfig = Field(default_factory=ModelConfig)
     data: DataConfig = Field(default_factory=DataConfig)
@@ -93,7 +97,7 @@ class Settings(BaseSettings):
     api: APIConfig = Field(default_factory=APIConfig)
     dashboard: DashboardConfig = Field(default_factory=DashboardConfig)
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
-    
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
@@ -104,11 +108,11 @@ class Settings(BaseSettings):
 def load_config(config_path: Optional[str] = None) -> Settings:
     """Load configuration from file and environment variables."""
     settings = Settings()
-    
+
     if config_path and os.path.exists(config_path):
         with open(config_path, "r") as f:
             config_data = yaml.safe_load(f)
-            
+
         # Update settings with config file data
         for key, value in config_data.items():
             if hasattr(settings, key):
@@ -119,11 +123,11 @@ def load_config(config_path: Optional[str] = None) -> Settings:
                     setattr(settings, key, updated_config)
                 else:
                     setattr(settings, key, value)
-    
+
     # Ensure directories exist
     for dir_path in [settings.data_dir, settings.models_dir, settings.logs_dir]:
         dir_path.mkdir(parents=True, exist_ok=True)
-    
+
     return settings
 
 

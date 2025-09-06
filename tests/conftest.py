@@ -28,9 +28,9 @@ def test_client() -> TestClient:
 def sample_sessions_data() -> pd.DataFrame:
     """Create sample sessions data for testing."""
     data = {
-        'site_id': [1, 1, 1, 2, 2, 2] * 10,
-        'timestamp': pd.date_range('2024-01-01', periods=60, freq='H'),
-        'sessions': [5.0, 3.2, 7.8, 4.1, 6.5, 2.9] * 10
+        "site_id": [1, 1, 1, 2, 2, 2] * 10,
+        "timestamp": pd.date_range("2024-01-01", periods=60, freq="H"),
+        "sessions": [5.0, 3.2, 7.8, 4.1, 6.5, 2.9] * 10,
     }
     return pd.DataFrame(data)
 
@@ -39,12 +39,12 @@ def sample_sessions_data() -> pd.DataFrame:
 def sample_hourly_data() -> pd.DataFrame:
     """Create sample hourly aggregated data for testing."""
     data = {
-        'site_id': [1, 1, 2, 2] * 12,
-        'hour': pd.date_range('2024-01-01', periods=48, freq='H'),
-        'sessions': [5.0, 3.2, 7.8, 4.1] * 12,
-        'session_count': [1, 1, 1, 1] * 12,
-        'avg_sessions': [5.0, 3.2, 7.8, 4.1] * 12,
-        'first_timestamp': pd.date_range('2024-01-01', periods=48, freq='H')
+        "site_id": [1, 1, 2, 2] * 12,
+        "hour": pd.date_range("2024-01-01", periods=48, freq="H"),
+        "sessions": [5.0, 3.2, 7.8, 4.1] * 12,
+        "session_count": [1, 1, 1, 1] * 12,
+        "avg_sessions": [5.0, 3.2, 7.8, 4.1] * 12,
+        "first_timestamp": pd.date_range("2024-01-01", periods=48, freq="H"),
     }
     return pd.DataFrame(data)
 
@@ -52,10 +52,10 @@ def sample_hourly_data() -> pd.DataFrame:
 @pytest.fixture
 def temp_data_file(sample_sessions_data) -> Generator[str, None, None]:
     """Create a temporary data file for testing."""
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
         sample_sessions_data.to_csv(f.name, index=False)
         yield f.name
-    
+
     # Cleanup
     os.unlink(f.name)
 
@@ -85,19 +85,20 @@ def sample_prediction_request() -> dict:
         "hour_cos": 0.866,
         "lag_1": 5.2,
         "lag_24": 4.8,
-        "rmean_24": 5.0
+        "rmean_24": 5.0,
     }
 
 
 @pytest.fixture
 def mock_model_path() -> Generator[str, None, None]:
     """Create a mock model file path."""
-    with tempfile.NamedTemporaryFile(suffix='.joblib', delete=False) as f:
+    with tempfile.NamedTemporaryFile(suffix=".joblib", delete=False) as f:
         # Create a dummy model file (empty for testing)
         import joblib
+
         joblib.dump({"dummy": "model"}, f.name)
         yield f.name
-    
+
     # Cleanup
     os.unlink(f.name)
 
