@@ -1,4 +1,5 @@
-"""Data pipeline utilities for loading, validating, and processing charging session logs.
+"""Data pipeline utilities for loading, validating, and processing
+charging session logs.
 
 This module provides robust data loading and processing capabilities with
 comprehensive error handling, data validation, and type safety.

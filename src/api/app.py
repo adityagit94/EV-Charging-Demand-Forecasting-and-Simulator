@@ -37,7 +37,9 @@ MODEL_LOAD_TIME = Histogram("model_load_duration_seconds", "Model loading time")
 # FastAPI app configuration
 app = FastAPI(
     title="EV Charging Demand Forecast API",
-    description="Advanced ML API for predicting EV charging demand at charging stations",
+    description=(
+        "Advanced ML API for predicting EV charging demand at charging stations"
+    ),
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -348,7 +350,8 @@ async def predict_batch(requests: List[PredictRequest]):
         PREDICTION_COUNT.inc(len(requests))
 
         api_logger.info(
-            f"Batch prediction completed: {len(requests)} predictions in {processing_time:.2f}ms"
+            f"Batch prediction completed: {len(requests)} predictions in "
+            f"{processing_time:.2f}ms"
         )
 
         return {"predictions": responses, "total_count": len(responses)}
