@@ -4,9 +4,10 @@ This module provides a production-ready REST API for serving machine learning
 predictions with comprehensive error handling, validation, and monitoring.
 """
 
+import os
 import time
 from datetime import datetime
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 import joblib
 import pandas as pd

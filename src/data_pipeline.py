@@ -1,12 +1,14 @@
 """Data pipeline utilities for loading, validating, and processing charging session logs.
 
-This module provides robust data loading and processing capabilities with comprehensive
-error handling, data validation, and type safety.
+This module provides robust data loading and processing capabilities with
+comprehensive error handling, data validation, and type safety.
 """
 
-from typing import List, Optional, Tuple, Union
+from pathlib import Path
+from typing import List, Optional, Union
 
 import pandas as pd
+from loguru import logger
 
 from .utils.config import settings
 
@@ -106,7 +108,8 @@ class DataPipeline:
             df = self.clean_data(df)
 
             self.logger.info(
-                f"Successfully loaded {len(df)} sessions from {len(df['site_id'].unique())} sites"
+                f"Successfully loaded {len(df)} sessions from "
+                f"{len(df['site_id'].unique())} sites"
             )
             return df
 

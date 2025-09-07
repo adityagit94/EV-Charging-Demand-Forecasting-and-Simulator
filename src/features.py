@@ -7,10 +7,11 @@ This module provides comprehensive feature engineering capabilities including:
 - Spatial features (location-based patterns)
 """
 
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
+from loguru import logger
 
 from .utils.config import settings
 
@@ -81,7 +82,8 @@ class FeatureEngineer:
             df["month_cos"] = np.cos(2 * np.pi * df["month"] / 12)
 
         if include_calendar:
-            # Holiday indicators (simplified - can be extended with actual holiday calendar)
+            # Holiday indicators (simplified - can be extended with actual
+            # holiday calendar)
             df["is_holiday"] = 0  # Placeholder for holiday detection
 
         self.logger.info(f"Added temporal features, shape: {df.shape}")
