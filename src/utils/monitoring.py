@@ -2,7 +2,7 @@
 
 import json
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -116,7 +116,8 @@ class DataDriftDetector:
 
         if drift_results["drift_detected"]:
             self.logger.warning(
-                f"Data drift detected in features: {drift_results['features_with_drift']}"
+                f"Data drift detected in features: "
+                f"{drift_results['features_with_drift']}"
             )
         else:
             self.logger.info("No significant data drift detected")
@@ -227,7 +228,8 @@ class ModelPerformanceMonitor:
 
         if degraded_metrics:
             self.logger.warning(
-                f"Performance degradation detected for {self.model_name}: {degraded_metrics}"
+                f"Performance degradation detected for {self.model_name}: "
+                f"{degraded_metrics}"
             )
 
     def get_performance_summary(self, days: int = 30) -> Dict:
@@ -348,13 +350,13 @@ class AlertManager:
 
         message = f"""
         🚨 DATA DRIFT ALERT 🚨
-        
+
         Drift detected in {len(drift_results['features_with_drift'])} features:
         {', '.join(drift_results['features_with_drift'])}
-        
+
         Drift percentage: {drift_results['summary']['drift_percentage']:.1f}%
         Timestamp: {drift_results['timestamp']}
-        
+
         Please investigate and consider retraining the model.
         """
 
@@ -369,16 +371,16 @@ class AlertManager:
         """
         message = f"""
         📉 PERFORMANCE DEGRADATION ALERT 📉
-        
-        Model: {model_name}
-        
-        Degraded metrics:
+
+Model: {model_name}
+
+Degraded metrics:
         """
 
         for metric_info in degraded_metrics:
             message += f"""
-        - {metric_info['metric']}: {metric_info['current']:.4f} 
-          (baseline: {metric_info['baseline']:.4f}, 
+        - {metric_info['metric']}: {metric_info['current']:.4f}
+          (baseline: {metric_info['baseline']:.4f},
            degradation: {metric_info['degradation_pct']:.1f}%)
         """
 
