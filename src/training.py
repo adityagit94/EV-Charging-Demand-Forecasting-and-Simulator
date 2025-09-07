@@ -3,7 +3,7 @@
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -13,7 +13,6 @@ from sklearn.model_selection import train_test_split
 from .data_pipeline import DataPipeline
 from .features import FeatureEngineer
 from .models.xgboost_model import XGBoostModel
-from .utils.config import settings
 
 
 class ModelTrainer:
@@ -156,7 +155,8 @@ class ModelTrainer:
             self.logger.info("Performing cross-validation...")
             cv_results = model.cross_validate(X_train, y_train)
             self.logger.info(
-                f"CV Score: {cv_results['mean_score']:.4f} (+/- {cv_results['std_score']:.4f})"
+                f"CV Score: {cv_results['mean_score']:.4f} "
+                f"(+/- {cv_results['std_score']:.4f})"
             )
             self.training_results["cross_validation"] = cv_results
 
@@ -294,7 +294,7 @@ class ModelTrainer:
         # Train models
         for model_type in model_types:
             if model_type == "xgboost":
-                model = self.train_xgboost(
+                self.train_xgboost(
                     X_train,
                     y_train,
                     X_val,
