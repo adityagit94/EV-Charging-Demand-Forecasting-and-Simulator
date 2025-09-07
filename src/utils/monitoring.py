@@ -185,7 +185,9 @@ class ModelPerformanceMonitor:
 
         return metrics
 
-    def _check_performance_degradation(self, current_metrics: Dict[str, Any]) -> Dict[str, Any]:
+    def _check_performance_degradation(
+        self, current_metrics: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Check if current performance has degraded significantly."""
         degradation_threshold = 0.1  # 10% degradation threshold
 
@@ -364,7 +366,9 @@ class AlertManager:
 
         self._send_alert("Data Drift Alert", message)
 
-    def send_performance_alert(self, model_name: str, degraded_metrics: List[Dict[str, Any]]) -> None:
+    def send_performance_alert(
+        self, model_name: str, degraded_metrics: List[Dict[str, Any]]
+    ) -> None:
         """Send alert for performance degradation.
 
         Args:
