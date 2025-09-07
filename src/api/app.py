@@ -247,7 +247,9 @@ async def detailed_health() -> HealthResponse:
     return health_check()  # type: ignore
 
 
-@app.post("/predict", response_model=PredictResponse, tags=["Predictions"])  # type: ignore
+@app.post(
+    "/predict", response_model=PredictResponse, tags=["Predictions"]
+)  # type: ignore
 async def predict_demand(request: PredictRequest) -> PredictResponse:
     """Predict EV charging demand for a given site and time."""
     start_time = time.time()
