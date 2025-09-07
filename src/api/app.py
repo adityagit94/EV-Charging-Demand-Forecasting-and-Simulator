@@ -4,10 +4,8 @@ This module provides a production-ready REST API for serving machine learning
 predictions with comprehensive error handling, validation, and monitoring.
 """
 
-import os
 import time
 from datetime import datetime
-from pathlib import Path
 from typing import Dict, List, Optional, Union
 
 import joblib
@@ -16,7 +14,6 @@ import xgboost as xgb
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
-from loguru import logger
 from prometheus_client import Counter, Histogram, generate_latest
 from pydantic import BaseModel, Field, validator
 

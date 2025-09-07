@@ -11,7 +11,6 @@ from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from loguru import logger
 
 from .utils.config import settings
 
