@@ -3,7 +3,7 @@
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -27,8 +27,8 @@ class ModelTrainer:
         self.logger = logger.bind(name=__name__)
         self.pipeline = DataPipeline()
         self.feature_engineer = FeatureEngineer()
-        self.models = {}
-        self.training_results = {}
+        self.models: Dict[str, Any] = {}
+        self.training_results: Dict[str, Any] = {}
 
     def prepare_data(
         self,
@@ -122,7 +122,7 @@ class ModelTrainer:
         y_val: Optional[pd.Series] = None,
         hyperparameter_tuning: bool = False,
         cross_validation: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ) -> XGBoostModel:
         """Train XGBoost model.
 
@@ -149,7 +149,7 @@ class ModelTrainer:
             self.training_results["hyperparameter_tuning"] = tuning_results
         else:
             # Regular training
-            model.fit(X_train, y_train, X_val, y_val)
+            model.fit(X_train, y_train, X_val=X_val, y_val=y_val)
 
         if cross_validation:
             self.logger.info("Performing cross-validation...")
@@ -165,7 +165,7 @@ class ModelTrainer:
 
     def evaluate_model(
         self, model_name: str, X_test: pd.DataFrame, y_test: pd.Series
-    ) -> Dict[str, float]:
+    ) -> Dict[str, Any]:
         """Evaluate a trained model.
 
         Args:
@@ -187,7 +187,7 @@ class ModelTrainer:
             self.logger.info(f"  {metric}: {value:.4f}")
 
         self.training_results[f"{model_name}_evaluation"] = metrics
-        return metrics
+        return metrics  # type: ignore
 
     def save_model(
         self,
@@ -243,7 +243,7 @@ class ModelTrainer:
         filepath = os.path.join(output_dir, filename)
 
         # Convert numpy arrays to lists for JSON serialization
-        results = {}
+        results: Dict[str, Any] = {}
         for key, value in self.training_results.items():
             if isinstance(value, dict):
                 results[key] = {}
@@ -264,11 +264,11 @@ class ModelTrainer:
     def run_full_pipeline(
         self,
         data_path: Optional[str] = None,
-        model_types: List[str] = None,
+        model_types: Optional[List[str]] = None,
         hyperparameter_tuning: bool = False,
         save_models: bool = True,
         output_dir: str = "models",
-    ) -> Dict[str, Dict]:
+    ) -> Dict[str, Any]:
         """Run the complete training pipeline.
 
         Args:
@@ -313,13 +313,13 @@ class ModelTrainer:
 
         # Save training results
         results_path = self.save_training_results(output_dir)
-        results["results_path"] = results_path
+        results["results_path"] = results_path  # type: ignore
 
         self.logger.info("Training pipeline completed successfully!")
         return results
 
 
-def main():
+def main() -> None:
     """Main training function."""
     import argparse
 

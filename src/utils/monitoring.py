@@ -2,7 +2,7 @@
 
 import json
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -46,7 +46,7 @@ class DataDriftDetector:
 
         return stats_dict
 
-    def detect_drift(self, new_data: pd.DataFrame) -> Dict:
+    def detect_drift(self, new_data: pd.DataFrame) -> Dict[str, Any]:
         """Detect drift in new data compared to reference.
 
         Args:
@@ -55,7 +55,7 @@ class DataDriftDetector:
         Returns:
             Dictionary with drift detection results
         """
-        drift_results = {
+        drift_results: Dict[str, Any] = {
             "timestamp": datetime.now().isoformat(),
             "drift_detected": False,
             "features_with_drift": [],
@@ -137,7 +137,7 @@ class ModelPerformanceMonitor:
         """
         self.model_name = model_name
         self.baseline_metrics = baseline_metrics
-        self.performance_history = []
+        self.performance_history: List[Dict[str, Any]] = []
         self.logger = logger.bind(name=__name__)
 
     def add_performance_record(
@@ -185,7 +185,7 @@ class ModelPerformanceMonitor:
 
         return metrics
 
-    def _check_performance_degradation(self, current_metrics: Dict[str, float]):
+    def _check_performance_degradation(self, current_metrics: Dict[str, Any]) -> Dict[str, Any]:
         """Check if current performance has degraded significantly."""
         degradation_threshold = 0.1  # 10% degradation threshold
 
@@ -231,6 +231,8 @@ class ModelPerformanceMonitor:
                 f"Performance degradation detected for {self.model_name}: "
                 f"{degraded_metrics}"
             )
+
+        return {"degraded_metrics": degraded_metrics}
 
     def get_performance_summary(self, days: int = 30) -> Dict:
         """Get performance summary for the last N days.
@@ -292,7 +294,7 @@ class ModelPerformanceMonitor:
         else:
             return "decreasing"
 
-    def save_performance_history(self, filepath: str):
+    def save_performance_history(self, filepath: str) -> None:
         """Save performance history to file.
 
         Args:
@@ -311,7 +313,7 @@ class ModelPerformanceMonitor:
 
         self.logger.info(f"Performance history saved to {filepath}")
 
-    def load_performance_history(self, filepath: str):
+    def load_performance_history(self, filepath: str) -> None:
         """Load performance history from file.
 
         Args:
@@ -339,7 +341,7 @@ class AlertManager:
         self.config = config or {}
         self.logger = logger.bind(name=__name__)
 
-    def send_drift_alert(self, drift_results: Dict):
+    def send_drift_alert(self, drift_results: Dict[str, Any]) -> None:
         """Send alert for data drift detection.
 
         Args:
@@ -362,7 +364,7 @@ class AlertManager:
 
         self._send_alert("Data Drift Alert", message)
 
-    def send_performance_alert(self, model_name: str, degraded_metrics: List[Dict]):
+    def send_performance_alert(self, model_name: str, degraded_metrics: List[Dict[str, Any]]) -> None:
         """Send alert for performance degradation.
 
         Args:
@@ -388,7 +390,7 @@ Degraded metrics:
 
         self._send_alert("Performance Degradation Alert", message)
 
-    def _send_alert(self, subject: str, message: str):
+    def _send_alert(self, subject: str, message: str) -> None:
         """Send alert through configured channels.
 
         Args:
@@ -409,7 +411,7 @@ Degraded metrics:
         # if 'slack_webhook' in self.config:
         #     self._send_slack_alert(subject, message)
 
-    def _send_slack_alert(self, subject: str, message: str):
+    def _send_slack_alert(self, subject: str, message: str) -> None:
         """Send alert to Slack (example implementation).
 
         Args:

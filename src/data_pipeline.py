@@ -264,7 +264,7 @@ class DataPipeline:
 
 # Convenience functions for backward compatibility
 def load_sessions(
-    path: str = "data/raw/synthetic_sessions.csv", parse_dates: List[str] = None
+    path: str = "data/raw/synthetic_sessions.csv", parse_dates: Optional[List[str]] = None
 ) -> pd.DataFrame:
     """Load sessions data (backward compatibility function)."""
     if parse_dates is None:

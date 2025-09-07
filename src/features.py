@@ -22,7 +22,7 @@ class FeatureEngineer:
     def __init__(self) -> None:
         """Initialize the feature engineer."""
         self.logger = logger.bind(name=__name__)
-        self.feature_columns = []
+        self.feature_columns: List[str] = []
 
     def add_temporal_features(
         self,
