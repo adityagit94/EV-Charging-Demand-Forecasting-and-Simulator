@@ -62,7 +62,7 @@ ev-charging-demand-forecast/
 │   ├── 02_baseline_xgboost.ipynb
 │   ├── 03_advanced_models.ipynb
 │   └── 04_model_evaluation.ipynb
-├── 🔧 src/
+├── 📦 ev_forecast/
 │   ├── api/
 │   │   ├── app.py              # FastAPI application
 │   │   ├── models.py           # Pydantic models
@@ -134,22 +134,22 @@ pip install -r requirements/dev.txt
 ### 2. Data Generation & Training
 ```bash
 # Generate synthetic dataset
-python -m src.data.synthetic_generator --sites 10 --days 90
+python -m ev_forecast.data.synthetic_generator --sites 10 --days 90
 
 # Run exploratory analysis
 jupyter notebook notebooks/01_exploratory_analysis.ipynb
 
 # Train baseline model
-python -m src.training --model xgboost --config configs/baseline.yaml
+python -m ev_forecast.training --model xgboost --config configs/baseline.yaml
 
 # Evaluate model performance
-python -m src.evaluation --model-path models/xgboost_v1.joblib
+python -m ev_forecast.evaluation --model-path models/xgboost_v1.joblib
 ```
 
 ### 3. API Service
 ```bash
 # Start FastAPI server
-uvicorn src.api.app:app --reload --port 8000
+uvicorn ev_forecast.api.app:app --reload --port 8000
 
 # View API documentation
 open http://localhost:8000/docs
@@ -217,7 +217,7 @@ docker-compose up --build
 
 ```bash
 # Run all tests
-pytest tests/ -v --cov=src --cov-report=html
+pytest tests/ -v --cov=ev_forecast --cov-report=html
 
 # Run specific test categories
 pytest tests/unit/          # Unit tests
@@ -225,9 +225,9 @@ pytest tests/integration/   # Integration tests
 pytest tests/performance/   # Performance tests
 
 # Code quality checks
-black src/ tests/           # Code formatting
-flake8 src/ tests/          # Linting
-mypy src/                   # Type checking
+black ev_forecast/ tests/           # Code formatting
+flake8 ev_forecast/ tests/          # Linting
+mypy ev_forecast/                   # Type checking
 ```
 
 ## 📈 Monitoring & Observability

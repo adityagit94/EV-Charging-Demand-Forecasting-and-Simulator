@@ -18,8 +18,8 @@ from fastapi.responses import JSONResponse, Response
 from prometheus_client import Counter, Histogram, generate_latest
 from pydantic import BaseModel, Field, validator
 
-from src.utils.config import settings
-from src.utils.logging import get_logger
+from ev_forecast.utils.config import settings
+from ev_forecast.utils.logging import get_logger
 
 # Initialize logger
 api_logger = get_logger(__name__)
@@ -237,7 +237,7 @@ async def health_check() -> HealthResponse:
         status="healthy",
         model_loaded=model is not None,
         model_path=settings.api.model_path,
-        model_version=model_metadata.get("version"),
+        model_version=str(model_metadata.get("version")),
         uptime_seconds=time.time() - startup_time,
         timestamp=datetime.now().isoformat(),
     )
@@ -246,7 +246,7 @@ async def health_check() -> HealthResponse:
 @app.get("/health", response_model=HealthResponse, tags=["Health"])
 async def detailed_health() -> HealthResponse:
     """Detailed health check endpoint."""
-    return health_check()
+    return await health_check()
 
 
 @app.post("/predict", response_model=PredictResponse, tags=["Predictions"])
@@ -291,7 +291,7 @@ async def predict_demand(request: PredictRequest) -> PredictResponse:
             prediction=float(prediction),
             site_id=request.site_id,
             timestamp=request.timestamp,
-            model_version=model_metadata.get("version", "unknown"),
+            model_version=str(model_metadata.get("version", "unknown")),
             confidence_interval={
                 "lower": float(prediction * 0.9),
                 "upper": float(prediction * 1.1),
@@ -348,7 +348,7 @@ async def predict_batch(requests: List[PredictRequest]) -> Dict[str, Any]:
                     prediction=float(pred),
                     site_id=req.site_id,
                     timestamp=req.timestamp,
-                    model_version=model_metadata.get("version", "unknown"),
+                    model_version=str(model_metadata.get("version", "unknown")),
                     confidence_interval={
                         "lower": float(pred * 0.9),
                         "upper": float(pred * 1.1),
@@ -422,7 +422,7 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(
-        "src.api.app:app",
+        "ev_forecast.api.app:app",
         host=settings.api.host,
         port=settings.api.port,
         reload=settings.api.reload,

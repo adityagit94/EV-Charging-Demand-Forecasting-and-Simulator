@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from src.features import FeatureEngineer
+from ev_forecast.features import FeatureEngineer
 
 
 class TestFeatureEngineer:
@@ -179,7 +179,7 @@ class TestBackwardCompatibilityFunctions:
 
     def test_add_time_features_function(self, sample_hourly_data):
         """Test add_time_features backward compatibility function."""
-        from src.features import add_time_features
+        from ev_forecast.features import add_time_features
 
         result = add_time_features(sample_hourly_data)
 
@@ -196,7 +196,7 @@ class TestBackwardCompatibilityFunctions:
 
     def test_add_lag_features_function(self, sample_hourly_data):
         """Test add_lag_features backward compatibility function."""
-        from src.features import add_lag_features
+        from ev_forecast.features import add_lag_features
 
         result = add_lag_features(sample_hourly_data)
 

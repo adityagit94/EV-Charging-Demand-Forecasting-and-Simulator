@@ -8,9 +8,9 @@ import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
 
-from src.api.app import app
-from src.data_pipeline import DataPipeline
-from src.features import FeatureEngineer
+from ev_forecast.api.app import app
+from ev_forecast.data_pipeline import DataPipeline
+from ev_forecast.features import FeatureEngineer
 
 # Set test environment
 os.environ["ENV"] = "test"

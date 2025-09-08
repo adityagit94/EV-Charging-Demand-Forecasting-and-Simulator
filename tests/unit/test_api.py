@@ -47,7 +47,7 @@ class TestAPIEndpoints:
         assert "error" in data
         assert "Model not loaded" in data["error"]
 
-    @patch("src.api.app.model")
+    @patch("ev_forecast.api.app.model")
     def test_predict_with_model(
         self, mock_model, test_client, sample_prediction_request
     ):
@@ -57,7 +57,7 @@ class TestAPIEndpoints:
         mock_model.__bool__ = Mock(return_value=True)  # Make model truthy
 
         # Mock the model metadata
-        with patch("src.api.app.model_metadata", {"version": "1.0.0"}):
+        with patch("ev_forecast.api.app.model_metadata", {"version": "1.0.0"}):
             response = test_client.post("/predict", json=sample_prediction_request)
 
         assert response.status_code == 200
@@ -95,7 +95,7 @@ class TestAPIEndpoints:
         response = test_client.post("/predict", json=incomplete_request)
         assert response.status_code == 422  # Validation error
 
-    @patch("src.api.app.model")
+    @patch("ev_forecast.api.app.model")
     def test_batch_predict(self, mock_model, test_client, sample_prediction_request):
         """Test batch prediction endpoint."""
         mock_model.predict.return_value = [5.5, 6.2]
@@ -104,7 +104,7 @@ class TestAPIEndpoints:
         batch_request = [sample_prediction_request, sample_prediction_request.copy()]
         batch_request[1]["site_id"] = 2
 
-        with patch("src.api.app.model_metadata", {"version": "1.0.0"}):
+        with patch("ev_forecast.api.app.model_metadata", {"version": "1.0.0"}):
             response = test_client.post("/predict/batch", json=batch_request)
 
         assert response.status_code == 200
@@ -129,14 +129,15 @@ class TestAPIEndpoints:
         response = test_client.get("/model/info")
         assert response.status_code == 404
 
-    @patch("src.api.app.model")
+    @patch("ev_forecast.api.app.model")
     def test_model_info_with_model(self, mock_model, test_client):
         """Test model info endpoint with loaded model."""
         mock_model.__class__.__name__ = "XGBRegressor"
         mock_model.num_features = 10
 
         with patch(
-            "src.api.app.model_metadata", {"version": "1.0.0", "path": "test.joblib"}
+            "ev_forecast.api.app.model_metadata",
+            {"version": "1.0.0", "path": "test.joblib"},
         ):
             response = test_client.get("/model/info")
 
@@ -217,7 +218,7 @@ class TestAPIModels:
 
     def test_predict_request_model(self):
         """Test PredictRequest model validation."""
-        from src.api.app import PredictRequest
+        from ev_forecast.api.app import PredictRequest
 
         valid_data = {
             "site_id": 1,
@@ -236,7 +237,7 @@ class TestAPIModels:
 
     def test_predict_response_model(self):
         """Test PredictResponse model."""
-        from src.api.app import PredictResponse
+        from ev_forecast.api.app import PredictResponse
 
         data = {
             "prediction": 5.5,

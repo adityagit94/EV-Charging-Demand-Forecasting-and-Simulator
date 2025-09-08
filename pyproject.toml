@@ -81,7 +81,11 @@ warn_no_return = true
 warn_unreachable = true
 strict_equality = true
 explicit_package_bases = true
-mypy_path = "src"
+warn_untyped_imports = false
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["ev_forecast*"]
 
 [tool.pytest.ini_options]
 minversion = "7.0"

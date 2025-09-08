@@ -181,7 +181,7 @@ class ModelPerformanceMonitor:
         self.performance_history.append(metrics)
 
         # Ensure all metric values are floats
-        float_metrics = {k: float(v) for k, v in metrics.items()}
+        float_metrics = {k: float(v) for k, v in metrics.items()}  # type: ignore
 
         # Check for performance degradation
         self._check_performance_degradation(float_metrics)

@@ -66,7 +66,7 @@ def setup_logging(
     logger.info(f"Logging configured with level: {log_level}")
 
 
-def get_logger(name: str):
+def get_logger(name: str) -> "logger":
     """Get a logger instance for a specific module.
 
     Args:

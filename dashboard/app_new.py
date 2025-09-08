@@ -12,8 +12,8 @@ import streamlit as st
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-from src.data_pipeline import DataPipeline
-from src.features import FeatureEngineer
+from ev_forecast.data_pipeline import DataPipeline
+from ev_forecast.features import FeatureEngineer
 from components.visualizations import (
     create_time_series_plot,
     create_correlation_heatmap,

@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from src.data_pipeline import DataPipeline, DataValidationError
+from ev_forecast.data_pipeline import DataPipeline, DataValidationError
 
 
 class TestDataPipeline:
@@ -126,7 +126,7 @@ class TestBackwardCompatibilityFunctions:
 
     def test_load_sessions_function(self, temp_data_file):
         """Test load_sessions backward compatibility function."""
-        from src.data_pipeline import load_sessions
+        from ev_forecast.data_pipeline import load_sessions
 
         df = load_sessions(temp_data_file)
         assert isinstance(df, pd.DataFrame)
@@ -134,7 +134,7 @@ class TestBackwardCompatibilityFunctions:
 
     def test_aggregate_hourly_function(self, sample_sessions_data):
         """Test aggregate_hourly backward compatibility function."""
-        from src.data_pipeline import aggregate_hourly
+        from ev_forecast.data_pipeline import aggregate_hourly
 
         result = aggregate_hourly(sample_sessions_data)
         assert isinstance(result, pd.DataFrame)

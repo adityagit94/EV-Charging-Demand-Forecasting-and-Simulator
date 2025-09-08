@@ -176,14 +176,16 @@ class DataPipeline:
             )
 
             # Flatten column names
-            hourly_df.columns = [
-                "site_id",
-                "hour",
-                "sessions",
-                "session_count",
-                "avg_sessions",
-                "first_timestamp",
-            ]
+            hourly_df.columns = pd.Index(
+                [
+                    "site_id",
+                    "hour",
+                    "sessions",
+                    "session_count",
+                    "avg_sessions",
+                    "first_timestamp",
+                ]
+            )
 
             # Fill missing hours with zeros
             hourly_df = self._fill_missing_hours(hourly_df)
@@ -212,7 +214,7 @@ class DataPipeline:
 
         # Create complete index
         complete_index = pd.MultiIndex.from_product(
-            [site_ids, hour_range], names=["site_id", "hour"]
+            [site_ids.tolist(), hour_range], names=["site_id", "hour"]
         )
 
         # Reindex and fill missing values
