@@ -312,7 +312,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Author**: Aditya Prakash
 - **Email**: aditya_2312res46@iitp.ac.in
-- **LinkedIn**: [Your LinkedIn Profile]
 - **GitHub**: [@adityagit94](https://github.com/adityagit94)
 
 ---
