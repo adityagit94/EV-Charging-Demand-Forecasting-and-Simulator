@@ -18,8 +18,8 @@ from fastapi.responses import JSONResponse, Response
 from prometheus_client import Counter, Histogram, generate_latest
 from pydantic import BaseModel, Field, validator
 
-from ..utils.config import settings
-from ..utils.logging import get_logger
+from src.utils.config import settings
+from src.utils.logging import get_logger
 
 # Initialize logger
 api_logger = get_logger(__name__)
@@ -76,7 +76,7 @@ class PredictRequest(BaseModel):
     lag_24: Optional[float] = Field(None, ge=0, description="24-hour lag feature")
     rmean_24: Optional[float] = Field(None, ge=0, description="24-hour rolling mean")
 
-    @validator("timestamp")  # type: ignore
+    @validator("timestamp")
     def validate_timestamp(cls, v: Any) -> str:
         """Validate timestamp format."""
         try:
@@ -172,14 +172,14 @@ def load_model() -> None:
         model_metadata = {}
 
 
-@app.on_event("startup")  # type: ignore
+@app.on_event("startup")
 async def startup_event() -> None:
     """Initialize the API on startup."""
     api_logger.info("Starting EV Charging Forecast API")
     load_model()
 
 
-@app.middleware("http")  # type: ignore
+@app.middleware("http")
 async def add_process_time_header(request: Request, call_next: Any) -> Any:
     """Add processing time and request tracking."""
     start_time = time.time()
@@ -200,7 +200,7 @@ async def add_process_time_header(request: Request, call_next: Any) -> Any:
     return response
 
 
-@app.exception_handler(HTTPException)  # type: ignore
+@app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
     """Handle HTTP exceptions with detailed error responses."""
     return JSONResponse(
@@ -209,11 +209,12 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
             error=exc.detail,
             error_code=f"HTTP_{exc.status_code}",
             timestamp=datetime.now().isoformat(),
+            request_id=request.headers.get("X-Request-ID")
         ).dict(),
     )
 
 
-@app.exception_handler(Exception)  # type: ignore
+@app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     """Handle general exceptions."""
     api_logger.error(f"Unhandled exception: {exc}", exc_info=True)
@@ -224,11 +225,12 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
             error="Internal server error",
             error_code="INTERNAL_ERROR",
             timestamp=datetime.now().isoformat(),
+            request_id=request.headers.get("X-Request-ID")
         ).dict(),
     )
 
 
-@app.get("/", response_model=HealthResponse, tags=["Health"])  # type: ignore
+@app.get("/", response_model=HealthResponse, tags=["Health"])
 async def health_check() -> HealthResponse:
     """Health check endpoint."""
     return HealthResponse(
@@ -241,15 +243,15 @@ async def health_check() -> HealthResponse:
     )
 
 
-@app.get("/health", response_model=HealthResponse, tags=["Health"])  # type: ignore
+@app.get("/health", response_model=HealthResponse, tags=["Health"])
 async def detailed_health() -> HealthResponse:
     """Detailed health check endpoint."""
-    return health_check()  # type: ignore
+    return health_check()
 
 
 @app.post(
     "/predict", response_model=PredictResponse, tags=["Predictions"]
-)  # type: ignore
+)
 async def predict_demand(request: PredictRequest) -> PredictResponse:
     """Predict EV charging demand for a given site and time."""
     start_time = time.time()
@@ -292,6 +294,7 @@ async def predict_demand(request: PredictRequest) -> PredictResponse:
             site_id=request.site_id,
             timestamp=request.timestamp,
             model_version=model_metadata.get("version", "unknown"),
+            confidence_interval={"lower": float(prediction * 0.9), "upper": float(prediction * 1.1)},  # Example
             processing_time_ms=processing_time,
         )
 
@@ -303,7 +306,7 @@ async def predict_demand(request: PredictRequest) -> PredictResponse:
         )
 
 
-@app.post("/predict/batch", tags=["Predictions"])  # type: ignore
+@app.post("/predict/batch", tags=["Predictions"])
 async def predict_batch(requests: List[PredictRequest]) -> Dict[str, Any]:
     """Batch prediction endpoint for multiple requests."""
     if model is None:
@@ -345,6 +348,7 @@ async def predict_batch(requests: List[PredictRequest]) -> Dict[str, Any]:
                     site_id=req.site_id,
                     timestamp=req.timestamp,
                     model_version=model_metadata.get("version", "unknown"),
+                    confidence_interval={"lower": float(pred * 0.9), "upper": float(pred * 1.1)},  # Example
                     processing_time_ms=processing_time / len(requests),
                 )
             )
@@ -366,13 +370,13 @@ async def predict_batch(requests: List[PredictRequest]) -> Dict[str, Any]:
         )
 
 
-@app.get("/metrics", tags=["Monitoring"])  # type: ignore
+@app.get("/metrics", tags=["Monitoring"])
 async def get_metrics() -> Response:
     """Prometheus metrics endpoint."""
     return Response(generate_latest(), media_type="text/plain")
 
 
-@app.post("/model/reload", tags=["Management"])  # type: ignore
+@app.post("/model/reload", tags=["Management"])
 async def reload_model() -> Dict[str, Any]:
     """Reload the machine learning model."""
     try:
@@ -395,7 +399,7 @@ async def reload_model() -> Dict[str, Any]:
         )
 
 
-@app.get("/model/info", tags=["Management"])  # type: ignore
+@app.get("/model/info", tags=["Management"])
 async def get_model_info() -> Dict[str, Any]:
     """Get information about the loaded model."""
     if model is None:

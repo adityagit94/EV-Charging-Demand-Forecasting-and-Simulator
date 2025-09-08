@@ -180,10 +180,13 @@ class ModelPerformanceMonitor:
 
         self.performance_history.append(metrics)
 
-        # Check for performance degradation
-        self._check_performance_degradation(metrics)
+        # Ensure all metric values are floats
+        float_metrics = {k: float(v) for k, v in metrics.items()}
 
-        return metrics
+        # Check for performance degradation
+        self._check_performance_degradation(float_metrics)
+
+        return float_metrics
 
     def _check_performance_degradation(
         self, current_metrics: Dict[str, Any]
