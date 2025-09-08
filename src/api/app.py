@@ -209,7 +209,7 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
             error=exc.detail,
             error_code=f"HTTP_{exc.status_code}",
             timestamp=datetime.now().isoformat(),
-            request_id=request.headers.get("X-Request-ID")
+            request_id=request.headers.get("X-Request-ID"),
         ).dict(),
     )
 
@@ -225,7 +225,7 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
             error="Internal server error",
             error_code="INTERNAL_ERROR",
             timestamp=datetime.now().isoformat(),
-            request_id=request.headers.get("X-Request-ID")
+            request_id=request.headers.get("X-Request-ID"),
         ).dict(),
     )
 
@@ -249,9 +249,7 @@ async def detailed_health() -> HealthResponse:
     return health_check()
 
 
-@app.post(
-    "/predict", response_model=PredictResponse, tags=["Predictions"]
-)
+@app.post("/predict", response_model=PredictResponse, tags=["Predictions"])
 async def predict_demand(request: PredictRequest) -> PredictResponse:
     """Predict EV charging demand for a given site and time."""
     start_time = time.time()
@@ -294,7 +292,10 @@ async def predict_demand(request: PredictRequest) -> PredictResponse:
             site_id=request.site_id,
             timestamp=request.timestamp,
             model_version=model_metadata.get("version", "unknown"),
-            confidence_interval={"lower": float(prediction * 0.9), "upper": float(prediction * 1.1)},  # Example
+            confidence_interval={
+                "lower": float(prediction * 0.9),
+                "upper": float(prediction * 1.1),
+            },  # Example
             processing_time_ms=processing_time,
         )
 
@@ -348,7 +349,10 @@ async def predict_batch(requests: List[PredictRequest]) -> Dict[str, Any]:
                     site_id=req.site_id,
                     timestamp=req.timestamp,
                     model_version=model_metadata.get("version", "unknown"),
-                    confidence_interval={"lower": float(pred * 0.9), "upper": float(pred * 1.1)},  # Example
+                    confidence_interval={
+                        "lower": float(pred * 0.9),
+                        "upper": float(pred * 1.1),
+                    },  # Example
                     processing_time_ms=processing_time / len(requests),
                 )
             )
