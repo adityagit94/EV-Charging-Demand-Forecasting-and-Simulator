@@ -47,6 +47,7 @@ async def lifespan(app: FastAPI):
     yield
     api_logger.info("Shutting down EV Charging Forecast API")
 
+
 app = FastAPI(
     title="EV Charging Demand Forecast API",
     description=(
@@ -56,7 +57,7 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # CORS middleware
@@ -99,7 +100,8 @@ class PredictRequest(BaseModel):
         except ValueError:
             raise ValueError("Invalid timestamp format. Use ISO 8601 format.")
 
-    model_config = ConfigDict(json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "site_id": 1,
                 "timestamp": "2024-01-15T14:30:00Z",
@@ -112,7 +114,8 @@ class PredictRequest(BaseModel):
                 "lag_24": 4.8,
                 "rmean_24": 5.0,
             }
-        })
+        }
+    )
 
 
 class PredictResponse(BaseModel):
@@ -268,7 +271,7 @@ async def predict_demand(request: PredictRequest) -> PredictResponse:
 
     try:
         # Prepare input data
-        input_data = pd.DataFrame([request.model_dump(exclude={'timestamp'})])
+        input_data = pd.DataFrame([request.model_dump(exclude={"timestamp"})])
 
         # Handle missing lag features
         for col in ["lag_1", "lag_24", "rmean_24"]:
@@ -332,7 +335,9 @@ async def predict_batch(requests: List[PredictRequest]) -> Dict[str, Any]:
         start_time = time.time()
 
         # Convert requests to DataFrame
-        input_data = pd.DataFrame([req.model_dump(exclude={'timestamp'}) for req in requests])
+        input_data = pd.DataFrame(
+            [req.model_dump(exclude={"timestamp"}) for req in requests]
+        )
 
         # Handle missing lag features
         for col in ["lag_1", "lag_24", "rmean_24"]:
