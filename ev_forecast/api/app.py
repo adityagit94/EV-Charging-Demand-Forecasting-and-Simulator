@@ -6,6 +6,7 @@ predictions with comprehensive error handling, validation, and monitoring.
 
 import os
 import time
+from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
@@ -16,8 +17,8 @@ from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from prometheus_client import Counter, Histogram, generate_latest
-from pydantic import BaseModel, Field, validator, ConfigDict, field_validator
-from contextlib import asynccontextmanager
+from pydantic import BaseModel, ConfigDict, Field, field_validator, validator
+
 from ev_forecast.utils.config import settings
 from ev_forecast.utils.logging import get_logger
 
