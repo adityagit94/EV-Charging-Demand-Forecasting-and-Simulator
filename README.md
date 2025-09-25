@@ -113,7 +113,7 @@ ev-charging-demand-forecast/
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.10+
+- Python 3.10
 - Docker (optional)
 - Git
 

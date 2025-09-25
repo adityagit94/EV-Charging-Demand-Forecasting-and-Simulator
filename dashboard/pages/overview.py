@@ -10,7 +10,7 @@ from ..components.visualizations import (
 )
 
 
-def show_overview_page(data: pd.DataFrame):
+def show_overview_page(data: pd.DataFrame) -> None:
     """Display the overview page."""
     st.markdown("## 📈 Data Overview")
 

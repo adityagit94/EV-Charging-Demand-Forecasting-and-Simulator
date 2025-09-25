@@ -94,7 +94,7 @@ def create_distribution_plot(
     return fig
 
 
-def display_metrics_cards(metrics: dict):
+def display_metrics_cards(metrics: dict) -> None:
     """Display metrics in a card layout."""
     cols = st.columns(len(metrics))
 

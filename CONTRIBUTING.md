@@ -6,7 +6,7 @@ Thank you for your interest in contributing to this project! This document provi
 
 ### Prerequisites
 
-- Python 3.10 or higher
+- Python 3.10
 - Git
 - Docker (optional, for containerized development)
 

@@ -16,8 +16,8 @@ from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from prometheus_client import Counter, Histogram, generate_latest
-from pydantic import BaseModel, Field, validator
-
+from pydantic import BaseModel, Field, validator, ConfigDict, field_validator
+from contextlib import asynccontextmanager
 from ev_forecast.utils.config import settings
 from ev_forecast.utils.logging import get_logger
 
@@ -35,6 +35,18 @@ PREDICTION_COUNT = Counter("predictions_total", "Total predictions made")
 MODEL_LOAD_TIME = Histogram("model_load_duration_seconds", "Model loading time")
 
 # FastAPI app configuration
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Context manager for managing the lifespan of the API.
+    Initializes the model on startup and cleans up on shutdown.
+    """
+    api_logger.info("Starting EV Charging Forecast API")
+    load_model()
+    yield
+    api_logger.info("Shutting down EV Charging Forecast API")
+
 app = FastAPI(
     title="EV Charging Demand Forecast API",
     description=(
@@ -44,6 +56,7 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
     openapi_url="/openapi.json",
+    lifespan=lifespan
 )
 
 # CORS middleware
@@ -76,7 +89,8 @@ class PredictRequest(BaseModel):
     lag_24: Optional[float] = Field(None, ge=0, description="24-hour lag feature")
     rmean_24: Optional[float] = Field(None, ge=0, description="24-hour rolling mean")
 
-    @validator("timestamp")
+    @field_validator("timestamp")
+    @classmethod
     def validate_timestamp(cls, v: Any) -> str:
         """Validate timestamp format."""
         try:
@@ -85,8 +99,7 @@ class PredictRequest(BaseModel):
         except ValueError:
             raise ValueError("Invalid timestamp format. Use ISO 8601 format.")
 
-    class Config:
-        schema_extra = {
+    model_config = ConfigDict(json_schema_extra = {
             "example": {
                 "site_id": 1,
                 "timestamp": "2024-01-15T14:30:00Z",
@@ -99,7 +112,7 @@ class PredictRequest(BaseModel):
                 "lag_24": 4.8,
                 "rmean_24": 5.0,
             }
-        }
+        })
 
 
 class PredictResponse(BaseModel):
@@ -170,13 +183,6 @@ def load_model() -> None:
         api_logger.error(f"Failed to load model: {e}")
         model = None
         model_metadata = {}
-
-
-@app.on_event("startup")
-async def startup_event() -> None:
-    """Initialize the API on startup."""
-    api_logger.info("Starting EV Charging Forecast API")
-    load_model()
 
 
 @app.middleware("http")
@@ -262,7 +268,7 @@ async def predict_demand(request: PredictRequest) -> PredictResponse:
 
     try:
         # Prepare input data
-        input_data = pd.DataFrame([request.dict()])
+        input_data = pd.DataFrame([request.model_dump(exclude={'timestamp'})])
 
         # Handle missing lag features
         for col in ["lag_1", "lag_24", "rmean_24"]:
@@ -310,23 +316,23 @@ async def predict_demand(request: PredictRequest) -> PredictResponse:
 @app.post("/predict/batch", tags=["Predictions"])
 async def predict_batch(requests: List[PredictRequest]) -> Dict[str, Any]:
     """Batch prediction endpoint for multiple requests."""
-    if model is None:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Model not loaded. Please check model file and restart the service.",
-        )
-
     if len(requests) > 100:  # Limit batch size
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Batch size too large. Maximum 100 requests per batch.",
         )
 
+    if model is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Model not loaded. Please check model file and restart the service.",
+        )
+
     try:
         start_time = time.time()
 
         # Convert requests to DataFrame
-        input_data = pd.DataFrame([req.dict() for req in requests])
+        input_data = pd.DataFrame([req.model_dump(exclude={'timestamp'}) for req in requests])
 
         # Handle missing lag features
         for col in ["lag_1", "lag_24", "rmean_24"]:
