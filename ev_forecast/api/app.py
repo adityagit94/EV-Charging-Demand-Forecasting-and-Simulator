@@ -17,7 +17,7 @@ from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from prometheus_client import Counter, Histogram, generate_latest
-from pydantic import BaseModel, ConfigDict, Field, field_validator, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from ev_forecast.utils.config import settings
 from ev_forecast.utils.logging import get_logger
