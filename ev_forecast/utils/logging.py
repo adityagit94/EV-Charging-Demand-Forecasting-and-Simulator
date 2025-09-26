@@ -2,7 +2,7 @@
 
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 
 from loguru import logger
 from loguru._logger import Logger
