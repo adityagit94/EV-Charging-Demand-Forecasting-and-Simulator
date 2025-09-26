@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from loguru import logger
+from loguru import logger, Logger
 
 from .config import settings
 
@@ -66,7 +66,7 @@ def setup_logging(
     logger.info(f"Logging configured with level: {log_level}")
 
 
-def get_logger(name: str) -> type(logger):
+def get_logger(name: str) -> Logger:
     """Get a logger instance for a specific module.
 
     Args:

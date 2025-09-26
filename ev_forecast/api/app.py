@@ -8,7 +8,7 @@ import os
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, AsyncGenerator
 
 import joblib
 import pandas as pd
@@ -39,7 +39,7 @@ MODEL_LOAD_TIME = Histogram("model_load_duration_seconds", "Model loading time")
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Context manager for managing the lifespan of the API.
     Initializes the model on startup and cleans up on shutdown.
     """
