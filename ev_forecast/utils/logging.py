@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from loguru import logger, Logger
+from loguru import Logger, logger
 
 from .config import settings
 
