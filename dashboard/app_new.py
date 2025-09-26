@@ -12,15 +12,14 @@ import streamlit as st
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
+from components.visualizations import (create_correlation_heatmap,
+                                       create_feature_importance_plot,
+                                       create_time_series_plot,
+                                       display_metrics_cards)
+from pages.overview import show_overview_page
+
 from ev_forecast.data_pipeline import DataPipeline
 from ev_forecast.features import FeatureEngineer
-from components.visualizations import (
-    create_time_series_plot,
-    create_correlation_heatmap,
-    create_feature_importance_plot,
-    display_metrics_cards,
-)
-from pages.overview import show_overview_page
 
 # Page configuration
 st.set_page_config(

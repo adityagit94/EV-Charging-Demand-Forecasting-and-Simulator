@@ -10,9 +10,10 @@ Usage:
     python data/synthetic_generator.py
 """
 
-import pandas as pd
-import numpy as np
 import os
+
+import numpy as np
+import pandas as pd
 
 
 def generate_synthetic_data(

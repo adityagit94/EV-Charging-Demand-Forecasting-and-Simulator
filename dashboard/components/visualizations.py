@@ -1,11 +1,12 @@
 """Visualization components for the dashboard."""
 
+from typing import List, Optional
+
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import streamlit as st
-from typing import List, Optional
+from plotly.subplots import make_subplots
 
 
 def create_time_series_plot(

@@ -1,13 +1,13 @@
 """Overview page for the dashboard."""
 
+from datetime import timedelta
+
 import pandas as pd
 import streamlit as st
-from datetime import timedelta
-from ..components.visualizations import (
-    create_time_series_plot,
-    display_metrics_cards,
-    create_demand_heatmap,
-)
+
+from ..components.visualizations import (create_demand_heatmap,
+                                         create_time_series_plot,
+                                         display_metrics_cards)
 
 
 def show_overview_page(data: pd.DataFrame) -> None:

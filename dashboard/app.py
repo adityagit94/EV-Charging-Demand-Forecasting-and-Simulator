@@ -1,8 +1,9 @@
-import streamlit as st
-import pandas as pd
 import altair as alt
-from ev_forecast.data_pipeline import load_sessions, aggregate_hourly
-from ev_forecast.features import add_time_features, add_lag_features
+import pandas as pd
+import streamlit as st
+
+from ev_forecast.data_pipeline import aggregate_hourly, load_sessions
+from ev_forecast.features import add_lag_features, add_time_features
 
 st.set_page_config(layout="wide", page_title="EV Charging Forecast Dashboard")
 
