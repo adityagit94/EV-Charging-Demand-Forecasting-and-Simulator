@@ -89,7 +89,7 @@ nodeenv==1.9.1
 notebook==7.4.7
 notebook_shim==0.2.4
 numba==0.62.0
-numpy==2.0.0
+numpy>=1.26.4,<2.0.0
 packaging==25.0
 pandas==2.2.0
 pandocfilters==1.5.1
