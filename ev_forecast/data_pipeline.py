@@ -188,7 +188,7 @@ class DataPipeline:
             )
 
             # Fill missing hours with zeros
-            hourly_df = self._fill_missing_hours(hourly_df)
+            # hourly_df = self._fill_missing_hours(hourly_df)
 
             self.logger.info(f"Aggregated to {len(hourly_df)} hourly observations")
             return hourly_df
