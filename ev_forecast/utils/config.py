@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List, Optional
 
 import yaml
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from pydantic_settings import BaseSettings
 
 
@@ -98,11 +98,12 @@ class Settings(BaseSettings):
     dashboard: DashboardConfig = Field(default_factory=DashboardConfig)
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = False
-        env_nested_delimiter = "__"
+    model_config = ConfigDict(
+        env_file = ".env",
+        env_file_encoding = "utf-8",
+        case_sensitive = False,
+        env_nested_delimiter = "__",
+    )
 
 
 def load_config(config_path: Optional[str] = None) -> Settings:
