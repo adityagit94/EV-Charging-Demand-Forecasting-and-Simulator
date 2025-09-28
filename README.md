@@ -26,11 +26,37 @@ This system implements a sophisticated time-series forecasting pipeline using:
 - **Machine Learning**: XGBoost with hyperparameter optimization
 - **Model Validation**: Time-based cross-validation and performance monitoring
 - **API Deployment**: Production-ready FastAPI service with comprehensive documentation
-- **Visualization**: Interactive Streamlit dashboard for stakeholder insights
+  - **Visualization**: Enhanced Interactive Streamlit dashboard with:
+    - Real-time network monitoring with live metrics
+    - Dynamic demand pattern analysis with time series forecasting
+    - State-wise infrastructure and utilization insights
+    - Advanced geospatial visualizations and heatmaps
+    - Customizable date ranges and interactive filters
+    - Responsive design with modern UI components
 
-## 🏗️ System Architecture
+### Dashboard Features
+- **Network Overview**:
+  - Live metrics with trend indicators
+  - Active charging sites tracking
+  - Network utilization analytics
+  - Peak hour demand analysis
+  - Day-over-day performance comparison
+  
+- **Demand Analytics**:
+  - Interactive time series visualizations
+  - Hourly demand heatmaps
+  - Weekend vs Weekday patterns
+  - Peak hour identification
+  - State-wise demand distribution
 
-```mermaid
+- **Performance Monitoring**:
+  - Real-time data updates
+  - Custom CSS styling with animations
+  - Mobile-responsive design
+  - Efficient data caching
+  - Interactive data exploration
+
+## 🏗️ System Architecture```mermaid
 graph TD
     A[Raw Charging Data] --> B[Data Pipeline]
     B --> C[Feature Engineering]
@@ -113,7 +139,7 @@ ev-charging-demand-forecast/
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.10
+- Python 3.12
 - Docker (optional)
 - Git
 
@@ -155,7 +181,7 @@ uvicorn ev_forecast.api.app:app --reload --port 8000
 open http://localhost:8000/docs
 ```
 
-### 4. Dashboard
+### 4. Enhanced Dashboard
 ```bash
 # Launch Streamlit dashboard
 streamlit run dashboard/app.py
@@ -163,6 +189,16 @@ streamlit run dashboard/app.py
 # Access dashboard
 open http://localhost:8501
 ```
+
+The dashboard provides a comprehensive overview of the EV charging network with:
+- Real-time monitoring of active charging sites
+- Dynamic demand pattern analysis with interactive visualizations
+- Advanced metrics with trend indicators
+- Customizable date ranges and filters
+- Responsive design with modern UI components
+- State-wise analytics with detailed insights
+- Peak hour identification and analysis
+- Weekend vs Weekday pattern comparison
 
 ### 5. Docker Deployment
 ```bash
@@ -212,6 +248,32 @@ docker-compose up --build
 - **Alerting**: Slack/email notifications
 - **Caching**: Redis for fast predictions
 - **Rate Limiting**: API protection
+
+### Dashboard Features (New)
+- **Real-time Monitoring**:
+  - Live metrics with trend indicators
+  - Active site tracking
+  - Network utilization analytics
+  - Peak demand monitoring
+  
+- **Interactive Visualizations**:
+  - Time series plots with forecasting
+  - Dynamic heatmaps
+  - State-wise comparisons
+  - Custom date range selection
+  
+- **Enhanced UI/UX**:
+  - Modern card-based design
+  - Hover animations and transitions
+  - Mobile-responsive layout
+  - Color-coded indicators
+  - Intuitive navigation
+  
+- **Performance Optimization**:
+  - Efficient data caching
+  - Optimized query patterns
+  - Responsive data loading
+  - Smart data aggregation
 
 ## 🧪 Testing & Quality Assurance
 

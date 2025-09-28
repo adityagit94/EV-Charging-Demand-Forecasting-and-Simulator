@@ -12,6 +12,7 @@ import pandas as pd
 from loguru import logger
 
 from .utils.config import settings
+from .utils.state_mapping import SITE_TO_STATE_MAPPING
 
 
 class DataValidationError(Exception):
@@ -66,6 +67,11 @@ class DataPipeline:
 
         self.logger.info(f"Data validation passed for {len(df)} rows")
 
+    def _add_state_information(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Add state information to the dataframe based on site_id."""
+        df["state"] = df["site_id"].map(SITE_TO_STATE_MAPPING)
+        return df
+
     def load_sessions(
         self,
         path: Optional[Union[str, Path]] = None,
@@ -105,8 +111,9 @@ class DataPipeline:
             # Validate loaded data
             self.validate_data(df)
 
-            # Clean data
+            # Clean data and add state information
             df = self.clean_data(df)
+            df = self._add_state_information(df)
 
             self.logger.info(
                 f"Successfully loaded {len(df)} sessions from "
@@ -164,8 +171,12 @@ class DataPipeline:
             df = df.assign(hour=df["timestamp"].dt.floor("H"))
 
             # Aggregate by site and hour
+            # Add state information before aggregation if not present
+            if 'state' not in df.columns:
+                df = self._add_state_information(df)
+
             hourly_df = (
-                df.groupby(["site_id", "hour"])
+                df.groupby(["site_id", "state", "hour"])
                 .agg(
                     {
                         "sessions": ["sum", "count", "mean"],
@@ -179,6 +190,7 @@ class DataPipeline:
             hourly_df.columns = pd.Index(
                 [
                     "site_id",
+                    "state",
                     "hour",
                     "sessions",
                     "session_count",

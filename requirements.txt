@@ -35,7 +35,10 @@ filelock
 flake8
 fonttools
 fqdn
-geopandas
+geopandas>=0.13.2
+folium>=0.14.0
+plotly-geo>=2.0.0
+shapely>=2.0.0
 gitdb
 GitPython
 h11
