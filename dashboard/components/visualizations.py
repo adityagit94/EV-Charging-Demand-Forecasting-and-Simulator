@@ -1,6 +1,6 @@
 """Visualization components for the dashboard."""
 
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -22,26 +22,22 @@ def create_time_series_plot(
     if x_col == "date" and not pd.api.types.is_datetime64_any_dtype(data[x_col]):
         data = data.copy()
         data[x_col] = pd.to_datetime(data[x_col])
-    
+
     fig = px.line(data, x=x_col, y=y_col, color=color_col, title=title)
-    
+
     # Update layout
     fig.update_layout(
         height=400,
         hovermode="x unified",
         showlegend=True if color_col else False,
         xaxis_title="Date",
-        yaxis_title="Number of Sessions"
+        yaxis_title="Number of Sessions",
     )
-    
+
     # Format date axis if we're plotting dates
     if x_col == "date":
-        fig.update_xaxes(
-            tickformat="%Y-%m-%d",
-            tickmode="auto",
-            nticks=10
-        )
-    
+        fig.update_xaxes(tickformat="%Y-%m-%d", tickmode="auto", nticks=10)
+
     return fig
 
 
@@ -51,23 +47,25 @@ def create_correlation_heatmap(
     """Create a correlation heatmap."""
     # Ensure unique column names
     data = data.loc[:, ~data.columns.duplicated()]
-    
+
     # Calculate correlation matrix
     correlation_matrix = data.corr()
 
     # Create heatmap
-    fig = go.Figure(data=go.Heatmap(
-        z=correlation_matrix.values,
-        x=correlation_matrix.columns,
-        y=correlation_matrix.columns,
-        colorscale="RdBu_r",
-        zmin=-1,
-        zmax=1,
-        text=np.round(correlation_matrix.values, 2),
-        texttemplate="%{text}",
-        textfont={"size": 10},
-        hoverongaps=False,
-    ))
+    fig = go.Figure(
+        data=go.Heatmap(
+            z=correlation_matrix.values,
+            x=correlation_matrix.columns,
+            y=correlation_matrix.columns,
+            colorscale="RdBu_r",
+            zmin=-1,
+            zmax=1,
+            text=np.round(correlation_matrix.values, 2),
+            texttemplate="%{text}",
+            textfont={"size": 10},
+            hoverongaps=False,
+        )
+    )
 
     # Update layout
     fig.update_layout(
@@ -75,7 +73,7 @@ def create_correlation_heatmap(
         height=600,
         xaxis=dict(tickangle=45),
         yaxis=dict(tickangle=0),
-        width=800
+        width=800,
     )
 
     return fig

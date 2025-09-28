@@ -1,46 +1,52 @@
 """Overview page for the dashboard."""
 
 from datetime import datetime, timedelta
+
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import streamlit as st
+from components.visualizations import (create_demand_heatmap,
+                                       create_time_series_plot,
+                                       display_metrics_cards)
+from plotly.subplots import make_subplots
 
-from components.visualizations import (
-    create_demand_heatmap,
-    create_time_series_plot,
-    display_metrics_cards
-)
 
 def create_overview_metrics(data: pd.DataFrame) -> dict:
     """Calculate overview metrics with trends."""
     current_date = data["hour"].dt.date.max()
     previous_date = current_date - timedelta(days=1)
-    
+
     # Current metrics
     current_data = data[data["hour"].dt.date == current_date]
     previous_data = data[data["hour"].dt.date == previous_date]
-    
+
     return {
         "Active Charging Sites": {
             "value": f"📍 {data['site_id'].nunique()}",
-            "change": f"+{len(set(current_data['site_id']) - set(previous_data['site_id']))}"
+            "change": f"+{len(set(current_data['site_id']) - set(previous_data['site_id']))}",
         },
         "Total Sessions Today": {
             "value": f"🔌 {int(current_data['sessions'].sum()):,}",
-            "change": f"{((current_data['sessions'].sum() / previous_data['sessions'].sum() - 1) * 100):.1f}%"
+            "change": f"{((current_data['sessions'].sum() / previous_data['sessions'].sum() - 1) * 100):.1f}%",
         },
         "Peak Hour Demand": {
             "value": f"⚡ {current_data.groupby(current_data['hour'].dt.hour)['sessions'].sum().max():.0f}",
-            "change": "Peak at " + str(current_data.groupby(current_data['hour'].dt.hour)['sessions'].sum().idxmax()) + ":00"
+            "change": "Peak at "
+            + str(
+                current_data.groupby(current_data["hour"].dt.hour)["sessions"]
+                .sum()
+                .idxmax()
+            )
+            + ":00",
         },
         "Network Utilization": {
             "value": f"📊 {(current_data['sessions'].mean() * 100):.1f}%",
-            "change": f"{((current_data['sessions'].mean() / previous_data['sessions'].mean() - 1) * 100):.1f}%"
-        }
+            "change": f"{((current_data['sessions'].mean() / previous_data['sessions'].mean() - 1) * 100):.1f}%",
+        },
     }
+
 
 def show_overview_page(data: pd.DataFrame) -> None:
     """Display the enhanced overview page."""
@@ -81,7 +87,7 @@ def show_overview_page(data: pd.DataFrame) -> None:
         }
         </style>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # Header with current time
@@ -93,12 +99,12 @@ def show_overview_page(data: pd.DataFrame) -> None:
             <p style='color: #95a5a6; font-size: 0.9rem;'>Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
     # Enhanced metrics display
     metrics = create_overview_metrics(data)
-    
+
     # Create a row of metric cards
     cols = st.columns(len(metrics))
     for col, (label, metric) in zip(cols, metrics.items()):
@@ -113,7 +119,7 @@ def show_overview_page(data: pd.DataFrame) -> None:
                     </p>
                 </div>
                 """,
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
     # Time series overview

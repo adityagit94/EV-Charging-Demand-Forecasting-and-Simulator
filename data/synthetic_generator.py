@@ -17,7 +17,11 @@ import pandas as pd
 
 
 def generate_synthetic_data(
-    n_sites: int = 10, n_days: int = 90, freq: str = "H", seed: int = 42, out_path: str = "data/raw/synthetic_sessions.csv"
+    n_sites: int = 10,
+    n_days: int = 90,
+    freq: str = "H",
+    seed: int = 42,
+    out_path: str = "data/raw/synthetic_sessions.csv",
 ) -> pd.DataFrame:
     np.random.seed(seed)
     start = pd.Timestamp("2024-01-01 00:00:00")

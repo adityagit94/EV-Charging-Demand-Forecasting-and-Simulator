@@ -172,7 +172,7 @@ class DataPipeline:
 
             # Aggregate by site and hour
             # Add state information before aggregation if not present
-            if 'state' not in df.columns:
+            if "state" not in df.columns:
                 df = self._add_state_information(df)
 
             hourly_df = (

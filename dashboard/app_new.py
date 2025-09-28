@@ -16,9 +16,9 @@ from components.visualizations import (create_correlation_heatmap,
                                        create_feature_importance_plot,
                                        create_time_series_plot,
                                        display_metrics_cards)
+from pages.feature_analysis import show_feature_analysis
 from pages.overview import show_overview_page
 from pages.state_analysis import show_state_analysis
-from pages.feature_analysis import show_feature_analysis
 
 from ev_forecast.data_pipeline import DataPipeline
 from ev_forecast.features import FeatureEngineer
@@ -121,7 +121,9 @@ else:
     hourly = st.session_state.processed_data
 
     # Create tabs
-    tab1, tab2, tab3, tab4 = st.tabs(["📈 Overview", "🔍 Site Analysis", "🗺️ State Analysis", "📊 Features"])
+    tab1, tab2, tab3, tab4 = st.tabs(
+        ["📈 Overview", "🔍 Site Analysis", "🗺️ State Analysis", "📊 Features"]
+    )
 
     with tab1:
         show_overview_page(hourly)
@@ -152,7 +154,7 @@ else:
     with tab3:
         st.markdown("## �️ State Analysis")
         show_state_analysis(hourly)
-        
+
     with tab4:
         st.markdown("## �📊 Feature Analysis")
 
