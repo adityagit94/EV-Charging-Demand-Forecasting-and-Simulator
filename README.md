@@ -3,13 +3,13 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104.1-green.svg)](https://fastapi.tiangolo.com)
 [![XGBoost](https://img.shields.io/badge/XGBoost-2.0.0-orange.svg)](https://xgboost.readthedocs.io)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.28.0-red.svg)](https://streamlit.io)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.28.0-red.svg)]([https://streamlit.io](https://ev-charging-demand-forecasting-and-simulator-t9uwyjxiu5hzkjqln.streamlit.app/))
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Code Style](https://img.shields.io/badge/Code%20Style-Black-black.svg)](https://black.readthedocs.io)
 
 > **Advanced Machine Learning System for Electric Vehicle Charging Infrastructure Optimization**
 
-A comprehensive, production-ready machine learning pipeline that forecasts hourly EV charging demand at candidate sites to optimize charger placement and operations planning. Built with modern MLOps practices and designed for scalability.
+A comprehensive, production-ready machine learning pipeline that forecasts hourly EV charging demand at candidate sites to optimize charger placement and operations planning. Built with modern MLOps practices and designed for scalability. Try the project at : https://ev-charging-demand-forecasting-and-simulator-t9uwyjxiu5hzkjqln.streamlit.app
 
 ## 🎯 Project Overview
 
