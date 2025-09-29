@@ -76,7 +76,7 @@ graph TD
 
 ## 📁 Project Structure
 
-```
+
 ev-charging-demand-forecast/
 ├── 📊 data/
 │   ├── raw/                    # Raw charging session data
@@ -117,7 +117,6 @@ ev-charging-demand-forecast/
 │   ├── integration/            # Integration tests
 │   └── conftest.py             # Test configuration
 ├── 🚀 deployment/
-│   ├── docker-compose.yml      # Multi-container deployment
 │   ├── k8s/                    # Kubernetes manifests
 │   └── terraform/              # Infrastructure as code
 ├── 📋 docs/
