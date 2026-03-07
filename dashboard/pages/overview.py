@@ -135,7 +135,7 @@ def show_overview_page(data: pd.DataFrame) -> None:
         "total_sessions",
         title="Daily Total Charging Sessions Across All Sites",
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # Hourly patterns
     st.markdown("### ⏰ Demand Patterns")
@@ -145,7 +145,7 @@ def show_overview_page(data: pd.DataFrame) -> None:
     with col1:
         # Demand heatmap
         fig = create_demand_heatmap(data, "Average Sessions by Hour and Day")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
     with col2:
         # Peak hours analysis

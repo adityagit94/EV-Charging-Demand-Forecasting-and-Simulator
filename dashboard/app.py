@@ -30,7 +30,7 @@ site_df = hourly[hourly["site_id"] == site].copy()
 st.subheader(f"Site {site} - timeseries (last 7 days)")
 site_df = site_df.sort_values("hour")
 chart = alt.Chart(site_df.tail(24 * 7)).mark_line().encode(x="hour:T", y="sessions:Q")
-st.altair_chart(chart, use_container_width=True)
+st.altair_chart(chart, width='stretch')
 
 st.markdown(
     "Use the `src/models/train_xgboost.py` script to train a model and the FastAPI to request predictions."

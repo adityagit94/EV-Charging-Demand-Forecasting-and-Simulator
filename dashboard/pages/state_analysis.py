@@ -64,7 +64,7 @@ def show_state_analysis(data: pd.DataFrame) -> None:
             station_data=station_data,
             hover_data=["mean_sessions", "peak_sessions"],
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
         # Add filters and analysis sections
         col1, col2 = st.columns(2)
@@ -77,7 +77,7 @@ def show_state_analysis(data: pd.DataFrame) -> None:
                 demand_column="mean_sessions",
                 title="Average Daily Sessions by State",
             )
-            st.plotly_chart(demand_fig, use_container_width=True)
+            st.plotly_chart(demand_fig, width='stretch')
 
         with col2:
             st.markdown("### ⚡ Peak Hours by Region")
@@ -95,7 +95,7 @@ def show_state_analysis(data: pd.DataFrame) -> None:
                 demand_column="sessions",
                 title="Hourly Demand Patterns by State",
             )
-            st.plotly_chart(peak_hours_fig, use_container_width=True)
+            st.plotly_chart(peak_hours_fig, width='stretch')
 
         # Time-based patterns
         st.markdown("### 📅 Temporal Analysis")
@@ -136,7 +136,7 @@ def show_state_analysis(data: pd.DataFrame) -> None:
                 color_col="state",
                 title="Daily Session Trends by State",
             )
-            st.plotly_chart(time_fig, use_container_width=True)
+            st.plotly_chart(time_fig, width='stretch')
     else:
         st.warning(
             "State information not available in the dataset. Please ensure your data includes state-level information."

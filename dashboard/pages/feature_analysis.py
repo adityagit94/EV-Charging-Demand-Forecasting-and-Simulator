@@ -200,7 +200,7 @@ def show_feature_analysis(data: pd.DataFrame) -> None:
     """
     )
     fig_importance = create_feature_importance_plot(data)
-    st.plotly_chart(fig_importance, use_container_width=True)
+    st.plotly_chart(fig_importance, width='stretch')
 
     # Temporal Patterns
     st.markdown("### 🕒 Temporal Patterns")
@@ -214,7 +214,7 @@ def show_feature_analysis(data: pd.DataFrame) -> None:
     """
     )
     fig_temporal = create_temporal_pattern_plot(data)
-    st.plotly_chart(fig_temporal, use_container_width=True)
+    st.plotly_chart(fig_temporal, width='stretch')
 
     # Feature Correlations
     st.markdown("### 🔄 Feature Correlations")
@@ -260,7 +260,7 @@ def show_feature_analysis(data: pd.DataFrame) -> None:
         fig_corr = create_correlation_heatmap(
             data[selected_cols], title="Feature Correlation Matrix"
         )
-        st.plotly_chart(fig_corr, use_container_width=True)
+        st.plotly_chart(fig_corr, width='stretch')
 
     # Feature Distributions
     st.markdown("### 📊 Feature Distributions")
@@ -279,4 +279,4 @@ def show_feature_analysis(data: pd.DataFrame) -> None:
 
     if selected_features:
         fig_dist = create_feature_distribution_plots(data, selected_features)
-        st.plotly_chart(fig_dist, use_container_width=True)
+        st.plotly_chart(fig_dist, width='stretch')

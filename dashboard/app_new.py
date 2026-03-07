@@ -149,7 +149,7 @@ else:
                 "site_id",
                 "Charging Sessions Over Time by Site",
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
 
     with tab3:
         st.markdown("## �️ State Analysis")
