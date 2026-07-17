@@ -6,6 +6,7 @@
 
 <p align="center">
 
+![CI](https://github.com/adityagit94/EV-Charging-Demand-Forecasting-and-Simulator/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Backend-green)
 ![XGBoost](https://img.shields.io/badge/XGBoost-ML-orange)
@@ -28,16 +29,17 @@ https://ev-charging-demand-forecasting-and-simulator-t9uwyjxiu5hzkjqln.streamlit
 
 # 📑 Table of Contents
 
-- Project Overview
-- System Architecture
-- Machine Learning Pipeline
-- Dashboard Preview
-- Project Structure
-- Quick Start
-- API Example
-- Technology Stack
-- Testing
-- Future Improvements
+- [Project Overview](#-project-overview)
+- [System Architecture](#-system-architecture)
+- [Machine Learning Pipeline](#-machine-learning-pipeline)
+- [Dashboard Preview](#-dashboard-preview)
+- [Project Structure](#-project-structure)
+- [Quick Start](#-quick-start)
+- [Docker Deployment](#-docker-deployment)
+- [API Example](#-example-prediction-request)
+- [Technology Stack](#-technology-stack)
+- [Testing](#-testing)
+- [Future Improvements](#-future-improvements)
 
 ---
 
@@ -172,7 +174,7 @@ Key engineered features:
 
 ### 4️⃣ Model Training
 
-A gradient boosting model (**XGBoost**) is trained to forecast hourly charging demand.
+A gradient boosting model (**XGBoost**) is trained to forecast hourly charging demand, using a chronological train/validation/test split with early stopping and time-series cross-validation. Optional hyperparameter tuning is available via `--hyperparameter-tuning`.
 
 ### 5️⃣ Model Serving
 
@@ -277,7 +279,7 @@ pip install -r requirements.txt
 ## Generate Dataset
 
 ```bash
-python data/synthetic_generator.py
+python data/synthetic_generator.py --sites 10 --days 90
 ```
 
 ## Train Model
@@ -285,6 +287,8 @@ python data/synthetic_generator.py
 ```bash
 python -m ev_forecast.training
 ```
+
+This saves a timestamped artifact plus `models/xgboost_baseline.joblib`, which the API serves.
 
 ## Start API
 
@@ -309,6 +313,23 @@ A minimal single-page version is also available:
 ```bash
 streamlit run dashboard/app.py
 ```
+
+---
+
+# 🐳 Docker Deployment
+
+The full stack (API, dashboard, Redis, Prometheus, Grafana, nginx) can be started with Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+| Service | URL |
+|------|------|
+| API | http://localhost:8000 |
+| Dashboard | http://localhost:8501 |
+| Prometheus | http://localhost:9090 |
+| Grafana | http://localhost:3000 |
 
 ---
 
@@ -361,10 +382,17 @@ Response
 
 # 🧪 Testing
 
-Run the full test suite:
+Install the package with dev tools and run the full test suite:
 
 ```bash
+pip install -e ".[dev]"
 pytest
+```
+
+With coverage:
+
+```bash
+pytest --cov=ev_forecast --cov-report=term-missing
 ```
 
 ---
