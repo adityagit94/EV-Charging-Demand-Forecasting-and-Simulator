@@ -231,20 +231,23 @@ EV-Charging-Demand-Forecasting/
 │   └── synthetic_generator.py
 │
 ├── ev_forecast/
+│   ├── api/
+│   │   └── app.py
+│   ├── models/
+│   │   └── xgboost_model.py
 │   ├── data_pipeline.py
 │   ├── features.py
 │   ├── training.py
 │   └── utils/
 │
-├── api/
-│   └── app.py
-│
 ├── dashboard/
 │   ├── app.py
-│   └── components/
+│   ├── app_new.py
+│   ├── components/
+│   └── views/
 │
 ├── notebooks/
-│   └── baseline_xgboost.ipynb
+│   └── 02_baseline_xgboost.ipynb
 │
 ├── tests/
 │
@@ -286,7 +289,7 @@ python -m ev_forecast.training
 ## Start API
 
 ```bash
-uvicorn api.app:app --host 0.0.0.0 --port 8000
+uvicorn ev_forecast.api.app:app --host 0.0.0.0 --port 8000
 ```
 
 API docs:
@@ -296,6 +299,12 @@ http://localhost:8000/docs
 ```
 
 ## Run Dashboard
+
+```bash
+streamlit run dashboard/app_new.py
+```
+
+A minimal single-page version is also available:
 
 ```bash
 streamlit run dashboard/app.py
@@ -308,8 +317,16 @@ streamlit run dashboard/app.py
 ```json
 POST /predict
 {
-  "site_id": "site_01",
-  "timestamp": "2026-05-01T10:00:00"
+  "site_id": 1,
+  "timestamp": "2026-05-01T10:00:00Z",
+  "hour_of_day": 10,
+  "day_of_week": 4,
+  "is_weekend": 0,
+  "hour_sin": 0.5,
+  "hour_cos": -0.866,
+  "lag_1": 5.2,
+  "lag_24": 4.8,
+  "rmean_24": 5.0
 }
 ```
 
@@ -317,7 +334,12 @@ Response
 
 ```json
 {
-  "predicted_sessions": 8.3
+  "prediction": 8.3,
+  "site_id": 1,
+  "timestamp": "2026-05-01T10:00:00Z",
+  "model_version": "1.0.0",
+  "confidence_interval": {"lower": 7.5, "upper": 9.1},
+  "processing_time_ms": 4.2
 }
 ```
 
