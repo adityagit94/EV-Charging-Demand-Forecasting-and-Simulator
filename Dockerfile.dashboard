@@ -1,5 +1,5 @@
-# Multi-stage build for Streamlit dashboard
-FROM python:3.12-slim as base
+# Streamlit dashboard image
+FROM python:3.12-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -14,7 +14,7 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
@@ -22,18 +22,16 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
-COPY src/ ./src/
+# Copy application code and install the package
+COPY pyproject.toml README.md ./
+COPY ev_forecast/ ./ev_forecast/
 COPY dashboard/ ./dashboard/
 COPY data/ ./data/
-RUN pip install .
+RUN pip install --no-cache-dir .
 
-# Change ownership to app user
-RUN chown -R appuser:appuser /app
+# Create writable directories and hand ownership to the app user
+RUN mkdir -p /app/logs /app/models && chown -R appuser:appuser /app
 USER appuser
-
-# Create necessary directories
-RUN mkdir -p /app/logs /app/models
 
 # Expose port
 EXPOSE 8501
