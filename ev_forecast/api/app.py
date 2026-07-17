@@ -62,17 +62,19 @@ app = FastAPI(
 )
 
 # CORS middleware
+# Note: wildcard origins cannot be combined with credentials; restrict
+# origins before enabling credentialed requests in production
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure appropriately for production
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Global model variable
 model = None
-model_metadata = {}
+model_metadata: Dict[str, Any] = {}
 
 
 class PredictRequest(BaseModel):
@@ -220,7 +222,7 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
             error_code=f"HTTP_{exc.status_code}",
             timestamp=datetime.now().isoformat(),
             request_id=request.headers.get("X-Request-ID"),
-        ).dict(),
+        ).model_dump(),
     )
 
 
@@ -236,13 +238,12 @@ async def general_exception_handler(request: Request, exc: Exception) -> JSONRes
             error_code="INTERNAL_ERROR",
             timestamp=datetime.now().isoformat(),
             request_id=request.headers.get("X-Request-ID"),
-        ).dict(),
+        ).model_dump(),
     )
 
 
-@app.get("/", response_model=HealthResponse, tags=["Health"])
-async def health_check() -> HealthResponse:
-    """Health check endpoint."""
+def _health_response() -> HealthResponse:
+    """Build the current health status response."""
     return HealthResponse(
         status="healthy",
         model_loaded=model is not None,
@@ -253,10 +254,50 @@ async def health_check() -> HealthResponse:
     )
 
 
+@app.get("/", response_model=HealthResponse, tags=["Health"])
+async def health_check() -> HealthResponse:
+    """Health check endpoint."""
+    return _health_response()
+
+
 @app.get("/health", response_model=HealthResponse, tags=["Health"])
 async def detailed_health() -> HealthResponse:
     """Detailed health check endpoint."""
-    return await health_check()
+    return _health_response()
+
+
+def _build_feature_frame(requests: List[PredictRequest]) -> pd.DataFrame:
+    """Build a model input frame from prediction requests.
+
+    Drops identifier fields, fills missing lag features, and aligns the
+    columns to the feature names the loaded model was trained with.
+    """
+    input_data = pd.DataFrame(
+        [req.model_dump(exclude={"timestamp", "site_id"}) for req in requests]
+    )
+
+    # Handle missing lag features
+    for col in ["lag_1", "lag_24", "rmean_24"]:
+        if col not in input_data.columns:
+            input_data[col] = 0.0
+        input_data[col] = input_data[col].fillna(0.0)
+
+    # Align to the model's training features; anything the request
+    # cannot provide (longer lags, rolling windows) defaults to 0
+    expected = getattr(model, "feature_names", None)
+    if isinstance(expected, (list, tuple)) and len(expected) > 0:
+        input_data = input_data.reindex(columns=list(expected), fill_value=0.0)
+
+    return input_data
+
+
+def _run_prediction(input_data: pd.DataFrame) -> Any:
+    """Run the loaded model on the prepared feature frame."""
+    if model is None:
+        raise RuntimeError("Model not loaded")
+    if isinstance(model, xgb.Booster):
+        return model.predict(xgb.DMatrix(input_data))
+    return model.predict(input_data)
 
 
 @app.post("/predict", response_model=PredictResponse, tags=["Predictions"])
@@ -271,19 +312,9 @@ async def predict_demand(request: PredictRequest) -> PredictResponse:
         )
 
     try:
-        # Prepare input data
-        input_data = pd.DataFrame([request.model_dump(exclude={"timestamp"})])
-
-        # Handle missing lag features
-        for col in ["lag_1", "lag_24", "rmean_24"]:
-            if col not in input_data.columns or input_data[col].isna().any():
-                input_data[col] = 0.0  # Default value for missing lags
-
-        # Create XGBoost DMatrix
-        dmatrix = xgb.DMatrix(input_data)
-
-        # Make prediction
-        prediction = model.predict(dmatrix)[0]
+        # Prepare input data and make prediction
+        input_data = _build_feature_frame([request])
+        prediction = _run_prediction(input_data)[0]
 
         # Calculate processing time
         processing_time = (time.time() - start_time) * 1000
@@ -335,20 +366,9 @@ async def predict_batch(requests: List[PredictRequest]) -> Dict[str, Any]:
     try:
         start_time = time.time()
 
-        # Convert requests to DataFrame
-        input_data = pd.DataFrame(
-            [req.model_dump(exclude={"timestamp"}) for req in requests]
-        )
-
-        # Handle missing lag features
-        for col in ["lag_1", "lag_24", "rmean_24"]:
-            if col not in input_data.columns:
-                input_data[col] = 0.0
-            input_data[col] = input_data[col].fillna(0.0)
-
-        # Make batch predictions
-        dmatrix = xgb.DMatrix(input_data)
-        predictions = model.predict(dmatrix)
+        # Prepare input data and make batch predictions
+        input_data = _build_feature_frame(requests)
+        predictions = _run_prediction(input_data)
 
         processing_time = (time.time() - start_time) * 1000
 
