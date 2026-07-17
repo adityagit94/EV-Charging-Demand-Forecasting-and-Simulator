@@ -7,8 +7,7 @@ import joblib
 import numpy as np
 import pandas as pd
 from loguru import logger
-from sklearn.model_selection import (GridSearchCV, TimeSeriesSplit,
-                                     cross_val_score)
+from sklearn.model_selection import GridSearchCV, TimeSeriesSplit, cross_val_score
 from xgboost import XGBRegressor
 
 from ..utils.config import settings

@@ -76,6 +76,9 @@ extend-exclude = '''
 )/
 '''
 
+[tool.isort]
+profile = "black"
+
 [tool.flake8]
 exclude = [".venv", ".git", "__pycache__", "docs", "build", "dist"]
 
