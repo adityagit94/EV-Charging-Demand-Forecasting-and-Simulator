@@ -145,7 +145,7 @@ class ModelPerformanceMonitor:
         predictions: np.ndarray,
         actuals: np.ndarray,
         timestamp: Optional[datetime] = None,
-    ) -> Dict[str, float]:
+    ) -> Dict[str, Any]:
         """Add a new performance record.
 
         Args:
@@ -162,14 +162,25 @@ class ModelPerformanceMonitor:
         # Calculate metrics
         mae = np.mean(np.abs(predictions - actuals))
         rmse = np.sqrt(np.mean((predictions - actuals) ** 2))
-        mape = np.mean(np.abs((actuals - predictions) / actuals)) * 100
+
+        # MAPE only over non-zero actuals to avoid division by zero
+        nonzero = actuals != 0
+        if nonzero.any():
+            mape = (
+                np.mean(
+                    np.abs((actuals[nonzero] - predictions[nonzero]) / actuals[nonzero])
+                )
+                * 100
+            )
+        else:
+            mape = float("nan")
 
         # R-squared
         ss_res = np.sum((actuals - predictions) ** 2)
         ss_tot = np.sum((actuals - np.mean(actuals)) ** 2)
         r2 = 1 - (ss_res / ss_tot) if ss_tot != 0 else 0
 
-        metrics = {
+        metrics: Dict[str, Any] = {
             "timestamp": timestamp.isoformat(),
             "mae": float(mae),
             "rmse": float(rmse),
@@ -180,13 +191,10 @@ class ModelPerformanceMonitor:
 
         self.performance_history.append(metrics)
 
-        # Ensure all metric values are floats
-        float_metrics = {k: float(v) for k, v in metrics.items()}  # type: ignore
-
         # Check for performance degradation
-        self._check_performance_degradation(float_metrics)
+        self._check_performance_degradation(metrics)
 
-        return float_metrics
+        return metrics
 
     def _check_performance_degradation(
         self, current_metrics: Dict[str, Any]

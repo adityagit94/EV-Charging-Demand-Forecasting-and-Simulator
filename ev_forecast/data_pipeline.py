@@ -70,6 +70,15 @@ class DataPipeline:
     def _add_state_information(self, df: pd.DataFrame) -> pd.DataFrame:
         """Add state information to the dataframe based on site_id."""
         df["state"] = df["site_id"].map(SITE_TO_STATE_MAPPING)
+
+        unmapped = df.loc[df["state"].isna(), "site_id"].unique()
+        if len(unmapped) > 0:
+            self.logger.warning(
+                f"No state mapping for site_ids {sorted(unmapped)}, "
+                "labelling them 'Unknown'"
+            )
+            df["state"] = df["state"].fillna("Unknown")
+
         return df
 
     def load_sessions(
@@ -168,7 +177,7 @@ class DataPipeline:
                 df["timestamp"] = pd.to_datetime(df["timestamp"])
 
             # Create hourly bins
-            df = df.assign(hour=df["timestamp"].dt.floor("H"))
+            df = df.assign(hour=df["timestamp"].dt.floor("h"))
 
             # Aggregate by site and hour
             # Add state information before aggregation if not present
@@ -199,44 +208,12 @@ class DataPipeline:
                 ]
             )
 
-            # Fill missing hours with zeros
-            # hourly_df = self._fill_missing_hours(hourly_df)
-
             self.logger.info(f"Aggregated to {len(hourly_df)} hourly observations")
             return hourly_df
 
         except Exception as e:
             self.logger.error(f"Failed to aggregate data: {e}")
             raise DataValidationError(f"Aggregation failed: {e}")
-
-    def _fill_missing_hours(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Fill missing hours with zero sessions.
-
-        Args:
-            df: Hourly aggregated dataframe
-
-        Returns:
-            Dataframe with filled missing hours
-        """
-        # Create complete hour range for each site
-        site_ids = df["site_id"].unique()
-        hour_range = pd.date_range(
-            start=df["hour"].min(), end=df["hour"].max(), freq="H"
-        )
-
-        # Create complete index
-        complete_index = pd.MultiIndex.from_product(
-            [site_ids.tolist(), hour_range], names=["site_id", "hour"]
-        )
-
-        # Reindex and fill missing values
-        df = (
-            df.set_index(["site_id", "hour"])
-            .reindex(complete_index, fill_value=0)
-            .reset_index()
-        )
-
-        return df
 
     def get_data_summary(self, df: pd.DataFrame) -> dict:
         """Generate a summary of the dataset.

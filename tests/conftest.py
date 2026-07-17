@@ -28,7 +28,7 @@ def sample_sessions_data() -> pd.DataFrame:
     """Create sample sessions data for testing."""
     data = {
         "site_id": [1, 1, 1, 2, 2, 2] * 10,
-        "timestamp": pd.date_range("2024-01-01", periods=60, freq="H"),
+        "timestamp": pd.date_range("2024-01-01", periods=60, freq="h"),
         "sessions": [5.0, 3.2, 7.8, 4.1, 6.5, 2.9] * 10,
     }
     return pd.DataFrame(data)
@@ -39,11 +39,11 @@ def sample_hourly_data() -> pd.DataFrame:
     """Create sample hourly aggregated data for testing."""
     data = {
         "site_id": [1, 1, 2, 2] * 12,
-        "hour": pd.date_range("2024-01-01", periods=48, freq="H"),
+        "hour": pd.date_range("2024-01-01", periods=48, freq="h"),
         "sessions": [5.0, 3.2, 7.8, 4.1] * 12,
         "session_count": [1, 1, 1, 1] * 12,
         "avg_sessions": [5.0, 3.2, 7.8, 4.1] * 12,
-        "first_timestamp": pd.date_range("2024-01-01", periods=48, freq="H"),
+        "first_timestamp": pd.date_range("2024-01-01", periods=48, freq="h"),
     }
     return pd.DataFrame(data)
 
@@ -100,9 +100,3 @@ def mock_model_path() -> Generator[str, None, None]:
 
     # Cleanup
     os.unlink(f.name)
-
-
-# Test markers
-pytest.mark.unit = pytest.mark.unit
-pytest.mark.integration = pytest.mark.integration
-pytest.mark.slow = pytest.mark.slow

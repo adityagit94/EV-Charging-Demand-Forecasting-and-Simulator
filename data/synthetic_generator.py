@@ -7,9 +7,10 @@ Produces a CSV with columns:
 - sessions (float)  # aggregated sessions or kWh for that hour
 
 Usage:
-    python data/synthetic_generator.py
+    python data/synthetic_generator.py [--sites N] [--days N] [--out PATH]
 """
 
+import argparse
 import os
 
 import numpy as np
@@ -19,7 +20,7 @@ import pandas as pd
 def generate_synthetic_data(
     n_sites: int = 10,
     n_days: int = 90,
-    freq: str = "H",
+    freq: str = "h",
     seed: int = 42,
     out_path: str = "data/raw/synthetic_sessions.csv",
 ) -> pd.DataFrame:
@@ -50,5 +51,23 @@ def generate_synthetic_data(
     return df
 
 
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Generate synthetic charging data")
+    parser.add_argument("--sites", type=int, default=10, help="Number of sites")
+    parser.add_argument("--days", type=int, default=90, help="Number of days")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed")
+    parser.add_argument(
+        "--out",
+        type=str,
+        default="data/raw/synthetic_sessions.csv",
+        help="Output CSV path",
+    )
+    args = parser.parse_args()
+
+    generate_synthetic_data(
+        n_sites=args.sites, n_days=args.days, seed=args.seed, out_path=args.out
+    )
+
+
 if __name__ == "__main__":
-    generate_synthetic_data()
+    main()
