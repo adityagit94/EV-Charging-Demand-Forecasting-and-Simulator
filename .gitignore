@@ -135,8 +135,8 @@ $RECYCLE.BIN/
 # Project-specific
 data/raw/
 data/processed/
-models/
-logs/
+/models/
+/logs/
 *.log
 
 # Docker
