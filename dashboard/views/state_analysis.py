@@ -1,7 +1,5 @@
 """State-wise analysis page for EV charging demand in India."""
 
-from datetime import datetime
-
 import pandas as pd
 import streamlit as st
 from components.india_visualizations import (create_demand_by_region,
@@ -13,14 +11,14 @@ from components.visualizations import display_metrics_cards
 
 def get_state_metrics(data: pd.DataFrame) -> dict:
     """Calculate key metrics for state-wise analysis."""
-    current_hour = datetime.now().strftime("%H:00")
+    latest_hour = data["hour"].max()
 
     return {
         "Total States": data["state"].nunique() if "state" in data.columns else 0,
         "Active Stations": data["site_id"].nunique(),
-        f"Current Sessions ({current_hour})": data[
-            data["hour"].dt.strftime("%H:00") == current_hour
-        ]["sessions"].mean(),
+        f"Sessions at {latest_hour:%H:00}": data[data["hour"] == latest_hour][
+            "sessions"
+        ].mean(),
         "Avg Daily Sessions": data.groupby(data["hour"].dt.date)["sessions"]
         .mean()
         .mean(),
@@ -54,17 +52,25 @@ def show_state_analysis(data: pd.DataFrame) -> None:
         # Prepare station data
         station_data = prepare_station_data(data)
 
-        # Create choropleth map with station markers
-        fig = create_india_choropleth(
-            state_data,
-            state_column="state",
-            value_column="total_stations",
-            title="EV Charging Infrastructure by State",
-            show_stations=True,
-            station_data=station_data,
-            hover_data=["mean_sessions", "peak_sessions"],
-        )
-        st.plotly_chart(fig, width='stretch')
+        # Create choropleth map with station markers; the state boundary
+        # data is fetched remotely, so degrade gracefully when offline
+        try:
+            fig = create_india_choropleth(
+                state_data,
+                state_column="state",
+                value_column="total_stations",
+                title="EV Charging Infrastructure by State",
+                show_stations=True,
+                station_data=station_data,
+                hover_data=["mean_sessions", "peak_sessions"],
+            )
+            st.plotly_chart(fig, width='stretch')
+        except Exception:
+            st.warning(
+                "Could not load the India map (state boundary data requires "
+                "network access). Showing state totals instead."
+            )
+            st.dataframe(state_data, width='stretch')
 
         # Add filters and analysis sections
         col1, col2 = st.columns(2)
@@ -113,7 +119,6 @@ def show_state_analysis(data: pd.DataFrame) -> None:
             )
             filtered_data = data[mask]
 
-            # Aggregate daily demand by state
             # Aggregate daily demand by state
             daily_data = (
                 filtered_data.groupby([filtered_data["hour"].dt.date, "state"])[

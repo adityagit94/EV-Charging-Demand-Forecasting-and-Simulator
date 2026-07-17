@@ -16,9 +16,9 @@ from components.visualizations import (create_correlation_heatmap,
                                        create_feature_importance_plot,
                                        create_time_series_plot,
                                        display_metrics_cards)
-from pages.feature_analysis import show_feature_analysis
-from pages.overview import show_overview_page
-from pages.state_analysis import show_state_analysis
+from views.feature_analysis import show_feature_analysis
+from views.overview import show_overview_page
+from views.state_analysis import show_state_analysis
 
 from ev_forecast.data_pipeline import DataPipeline
 from ev_forecast.features import FeatureEngineer

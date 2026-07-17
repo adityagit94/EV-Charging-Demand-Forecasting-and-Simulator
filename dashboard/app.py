@@ -33,5 +33,5 @@ chart = alt.Chart(site_df.tail(24 * 7)).mark_line().encode(x="hour:T", y="sessio
 st.altair_chart(chart, width='stretch')
 
 st.markdown(
-    "Use the `src/models/train_xgboost.py` script to train a model and the FastAPI to request predictions."
+    "Use `python -m ev_forecast.training` to train a model and the FastAPI service to request predictions."
 )

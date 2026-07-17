@@ -13,6 +13,13 @@ from components.visualizations import (create_demand_heatmap,
 from plotly.subplots import make_subplots
 
 
+def _pct_change(current: float, previous: float) -> str:
+    """Format a percentage change, handling missing previous-day data."""
+    if not previous:
+        return "n/a"
+    return f"{((current / previous - 1) * 100):.1f}%"
+
+
 def create_overview_metrics(data: pd.DataFrame) -> dict:
     """Calculate overview metrics with trends."""
     current_date = data["hour"].dt.date.max()
@@ -29,7 +36,9 @@ def create_overview_metrics(data: pd.DataFrame) -> dict:
         },
         "Total Sessions Today": {
             "value": f"🔌 {int(current_data['sessions'].sum()):,}",
-            "change": f"{((current_data['sessions'].sum() / previous_data['sessions'].sum() - 1) * 100):.1f}%",
+            "change": _pct_change(
+                current_data["sessions"].sum(), previous_data["sessions"].sum()
+            ),
         },
         "Peak Hour Demand": {
             "value": f"⚡ {current_data.groupby(current_data['hour'].dt.hour)['sessions'].sum().max():.0f}",
@@ -43,7 +52,9 @@ def create_overview_metrics(data: pd.DataFrame) -> dict:
         },
         "Network Utilization": {
             "value": f"📊 {(current_data['sessions'].mean() * 100):.1f}%",
-            "change": f"{((current_data['sessions'].mean() / previous_data['sessions'].mean() - 1) * 100):.1f}%",
+            "change": _pct_change(
+                current_data["sessions"].mean(), previous_data["sessions"].mean()
+            ),
         },
     }
 
