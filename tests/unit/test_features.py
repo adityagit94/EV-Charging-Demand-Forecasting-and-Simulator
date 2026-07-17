@@ -106,8 +106,11 @@ class TestFeatureEngineer:
             for feature in expected_features:
                 assert feature in result.columns
 
+        # Windows only use past values, so the first row per group is NaN
+        assert pd.isna(result["rmean_24"].iloc[0])
+
         # Check that rolling mean is reasonable
-        assert (result["rmean_24"] >= 0).all()
+        assert (result["rmean_24"].dropna() >= 0).all()
 
     def test_add_difference_features(self, feature_engineer, sample_hourly_data):
         """Test difference feature engineering."""

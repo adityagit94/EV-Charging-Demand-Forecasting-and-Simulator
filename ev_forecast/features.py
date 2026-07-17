@@ -128,7 +128,7 @@ class FeatureEngineer:
         windows: Optional[List[int]] = None,
         include_std: bool = True,
     ) -> pd.DataFrame:
-        """Add rolling statistical features.
+        """Add rolling statistical features computed over past values only.
 
         Args:
             df: Input dataframe
@@ -146,10 +146,15 @@ class FeatureEngineer:
         df = df.copy()
         df = df.sort_values([group_col, "hour"])
 
+        # Shift by one period so windows only use past values and the
+        # current target never leaks into its own features
+        shifted_col = f"_{target}_shifted"
+        df[shifted_col] = df.groupby(group_col)[target].shift(1)
+
         for window in windows:
             # Rolling mean
             df[f"rmean_{window}"] = (
-                df.groupby(group_col)[target]
+                df.groupby(group_col)[shifted_col]
                 .rolling(window, min_periods=1)
                 .mean()
                 .reset_index(0, drop=True)
@@ -158,7 +163,7 @@ class FeatureEngineer:
             # Rolling standard deviation
             if include_std:
                 df[f"rstd_{window}"] = (
-                    df.groupby(group_col)[target]
+                    df.groupby(group_col)[shifted_col]
                     .rolling(window, min_periods=1)
                     .std()
                     .reset_index(0, drop=True)
@@ -166,18 +171,20 @@ class FeatureEngineer:
 
             # Rolling min/max
             df[f"rmin_{window}"] = (
-                df.groupby(group_col)[target]
+                df.groupby(group_col)[shifted_col]
                 .rolling(window, min_periods=1)
                 .min()
                 .reset_index(0, drop=True)
             )
 
             df[f"rmax_{window}"] = (
-                df.groupby(group_col)[target]
+                df.groupby(group_col)[shifted_col]
                 .rolling(window, min_periods=1)
                 .max()
                 .reset_index(0, drop=True)
             )
+
+        df = df.drop(columns=[shifted_col])
 
         self.logger.info(f"Added rolling features for windows: {windows}")
         return df

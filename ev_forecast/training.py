@@ -13,6 +13,7 @@ from sklearn.model_selection import train_test_split
 from .data_pipeline import DataPipeline
 from .features import FeatureEngineer
 from .models.xgboost_model import XGBoostModel
+from .utils.config import settings
 
 
 class ModelTrainer:
@@ -62,12 +63,16 @@ class ModelTrainer:
         hourly["hour"] = pd.to_datetime(hourly["hour"])
 
         # Feature engineering
-        features_df = self.feature_engineer.create_feature_pipeline(
-            hourly, include_interactions=True
-        )
+        features_df = self.feature_engineer.create_feature_pipeline(hourly)
 
         # Remove rows with NaN values (from lag features)
         features_df = features_df.dropna().reset_index(drop=True)
+
+        # Order by time so the split below is truly chronological
+        # (feature engineering leaves the data sorted by site first)
+        features_df = features_df.sort_values(["hour", "site_id"]).reset_index(
+            drop=True
+        )
 
         # Separate features and target
         feature_cols = self.feature_engineer.get_feature_importance_names()
@@ -310,6 +315,9 @@ class ModelTrainer:
                 if save_models:
                     model_path = self.save_model("xgboost", output_dir)
                     results["xgboost"]["model_path"] = model_path
+
+                    # Refresh the canonical artifact served by the API
+                    self.models["xgboost"].save_model(settings.api.model_path)
 
         # Save training results
         results_path = self.save_training_results(output_dir)
